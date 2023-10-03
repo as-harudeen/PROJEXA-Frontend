@@ -1,45 +1,25 @@
-import { FC, useEffect } from "react";
-import { Nav } from "../../components/Nav/Nav";
+import { FC } from "react";
 import styles from "../../style";
-import { PasswordInput } from "../../components/auth/PasswordInput";
 import { Button } from "../../components/auth/AuthButton";
 import GoogleIcon from "@mui/icons-material/Google";
-import { AuthInput } from "../../components/auth/AuthInput";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { RegisterFormInterface } from "../../interfaces/Auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema } from "../../utils/zodValidator";
-import { toast } from "react-toastify";
+import { OTPInputContainer } from "../../components/auth/OTPInputContainer";
+import { resendRegisterOTPHandler } from "../../helper/auth.helper";
+import { useAuthContext } from "../../context/useAuthContext";
+import { RegisterForm } from "../../components/auth/RegisterForm";
+import { useAppDispatch } from "../../hooks/storeHooks";
+import { offLoading, onLoading } from "../../store/slice/loadingSlice";
 
 export const Register: FC = () => {
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<RegisterFormInterface>({ resolver: zodResolver(registerSchema) });
-  useEffect(() => {
-    console.log(errors);
-    if (errors.user_email?.message) {
-      toast.error("Please Enter valid Email.");
-    }
-    if (errors.user_name) {
-      toast.error("Username should be more than 4 character.");
-    }
+  const { isOTPFormViewble, setIsOTPFormViewble } = useAuthContext();
+  const dispatch = useAppDispatch();
 
-    if (errors.password) {
-      toast.error("Password should be more than 5 character");
-    }
-    if (errors.confirm_password) {
-      toast.error("Password not match");
-    }
-  });
-
-  const formSubmitHandler = (data: RegisterFormInterface) => {};
-
+  const resendOTPHandler = () => {
+    dispatch(onLoading());
+    resendRegisterOTPHandler();
+    dispatch(offLoading());
+  }
   return (
     <>
-      <Nav actived="login" />
       <div className={`bg-primary w-full ${styles.flexCenter} py-16 md:py-40 `}>
         <div
           className={` min-h-[600px] ${styles.boxWidth} ${styles.flexCenter}`}
@@ -59,42 +39,14 @@ export const Register: FC = () => {
                     Hi, Join with us.
                   </p>
                 </div>
-                <form onSubmit={handleSubmit(formSubmitHandler)}>
-                  <div className="flex-1 flex md:gap-4 gap-2 flex-col font-">
-                    <AuthInput
-                      {...register("user_name")}
-                      label="Email*"
-                      placeholder="Enter your email"
-                    />
-                    <AuthInput
-                      {...register("user_email")}
-                      label="Username*"
-                      placeholder="Enter your username"
-                    />
-                    <PasswordInput
-                      {...register("password")}
-                      label="Password*"
-                      placeholder="Enter your Password"
-                    />
-                    <PasswordInput
-                      {...register("confirm_password")}
-                      label="Confirm-Password*"
-                      placeholder="Enter your Password once more"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 my-6 md:my-12">
-                    <Button isPrimary={true} text="Sign up" />
-                    <Link to="/login">
-                      <Button isPrimary={false} text="Login" />
-                    </Link>
-                  </div>
-                </form>
+                <RegisterForm />
 
                 <div className="flex justify-center md:my-10 my-4">
                   <p>or</p>
                 </div>
                 <div>
                   <Button
+                    isDisabled={isOTPFormViewble}
                     icon={<GoogleIcon fontSize="small" className="mr-2" />}
                     isPrimary={true}
                     text="Sign up with google"
@@ -106,7 +58,41 @@ export const Register: FC = () => {
               <div
                 className={`bg-hash_one h-[100%] w-[100%] rounded-l-xl flex-1 ${styles.flexCenter}`}
               >
-                <div className="bg-light_hash h-[80%] w-[80%] rounded-lg"></div>
+                <div className="bg-light_hash h-[400px] top-[50%] sm:top-0 translate-y-[-50%] sm:translate-y-0 sm:h-[80%] sm:w-[80%] rounded-lg absolute sm:relative">
+                  <div
+                    className={`h-full w-full ${
+                      styles.flexCenter
+                    } flex-col justify-evenly px-6 ${
+                      !isOTPFormViewble ? "hidden" : ""
+                    }`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <h3 className="text-[20px] font-poppins font-semibold">
+                        Varify Email
+                      </h3>
+                      <p className="text-[15px]  font-[300]">
+                        Check your email and enter your one-time-password
+                      </p>
+                    </div>
+                    <OTPInputContainer fetchUrl="/auth/validate/register-otp"/>
+                    <div
+                      className={`${styles.flexCenter} flex-col font-poppins text-[15px] underline `}
+                    >
+                      <p
+                        className="cursor-pointer"
+                        onClick={resendOTPHandler}
+                      >
+                        resend
+                      </p>
+                      <p
+                        className="cursor-pointer"
+                        onClick={() => setIsOTPFormViewble(false)}
+                      >
+                        Change email
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

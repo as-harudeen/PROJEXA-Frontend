@@ -10,4 +10,5 @@ export interface NavProps {
 export interface PasswordInputProps {
     label: string;
     placeholder: string;
+    isDisabled?: boolean;
 }

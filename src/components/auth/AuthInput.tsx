@@ -2,9 +2,10 @@ import { FC, Ref, forwardRef } from "react";
 import { Input } from "@nextui-org/react";
 import { AuthInputProps } from "./props";
 
-export const AuthInput: FC<AuthInputProps> = forwardRef(({ label, placeholder, ...rest }, ref) => {
+export const AuthInput: FC<AuthInputProps> = forwardRef(({ label, placeholder,isDisabled, ...rest }, ref) => {
   return (
     <Input
+    isDisabled={isDisabled || false}
       ref={ref as Ref<HTMLInputElement>}
       {...rest}
       type="text"

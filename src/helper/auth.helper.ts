@@ -13,7 +13,7 @@ export const generateRegisterOTP = async (
   data: RegisterFormInterface
 ) => {
   try {
-    await axiosInstance.post("/otp/generate/register-otp", data);
+    await axiosInstance.post("/auth/generate/register-otp", data);
     toast.success("OTP Sended successfully");
     return true;
   } catch (err) {
@@ -36,7 +36,7 @@ export const generateRegisterOTP = async (
  */
 export const resendRegisterOTPHandler = async () => {
     try {
-      await axiosInstance.get("/otp/regenerate/register-otp");
+      await axiosInstance.get("/auth/regenerate/register-otp");
       toast.success("OTP sended successfully");
     } catch (err) {
       let message = "OPPS Something went wrong";

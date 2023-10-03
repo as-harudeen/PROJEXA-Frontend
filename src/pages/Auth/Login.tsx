@@ -1,37 +1,50 @@
-import React, { FC, useEffect, useState } from "react";
-import { Nav } from "../../components/Nav/Nav";
+import { FC } from "react";
 import styles from "../../style";
 import { PasswordInput } from "../../components/auth/PasswordInput";
 import { Button } from "../../components/auth/AuthButton";
 import GoogleIcon from "@mui/icons-material/Google";
 import { AuthInput } from "../../components/auth/AuthInput";
 import { Link } from "react-router-dom";
-import { LoginFromInitialState } from "../../common/initialState";
-import { useForm } from "react-hook-form";
-import { LoginFormInterface } from "../../interfaces/Auth";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { AuthErrorsInterface, LoginFormInterface } from "../../interfaces/Auth";
 import { loginSchema } from "../../utils/zodValidator";
 import { toast } from "react-toastify";
+import { useZodForm } from "../../hooks/useZodForm";
+import { useAuthErrorLog } from "../../hooks/useAuthErrorLog";
+import { axiosInstance } from "../../common/api";
+import { isAxiosError } from "axios";
+import { useAuthContext } from "../../context/useAuthContext";
+import { OTPInputContainer } from "../../components/auth/OTPInputContainer";
 
 export const Login: FC = () => {
-  const [formData, setFormData] = useState(LoginFromInitialState);
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<LoginFormInterface>({ resolver: zodResolver(loginSchema) });
+  const { isOTPFormViewble, setIsOTPFormViewble } = useAuthContext();
+  const { handleSubmit, register, errors } =
+    useZodForm<LoginFormInterface>(loginSchema);
+  useAuthErrorLog(errors as AuthErrorsInterface);
 
-  useEffect(() => {
-    if (errors.user_email?.message) {
-      toast.error(errors.user_email.message);
+  const FormSubmitHandler = async (data: LoginFormInterface) => {
+    try {
+      const res = await axiosInstance.post("/auth/login", data);
+      console.log(res.status);
+      if (res.status === 200) {
+        toast.success("Login success");
+      } else {
+        toast.success("OTP sent successfully");
+        setIsOTPFormViewble(true);
+      }
+    } catch (err) {
+      let message = "OPPS Something wrong";
+
+      if (isAxiosError(err)) {
+        if (err.response?.status === 400) {
+          message = "Incorrect email or password please try again";
+        }
+      }
+      toast.error(message);
     }
-  }, [errors]);
-
-  const FormSubmitHandler = (data: LoginFormInterface) => {};
+  };
 
   return (
     <>
-      <Nav actived="login" />
       <div className={`bg-primary w-full ${styles.flexCenter} py-16 md:py-40`}>
         <div
           className={` min-h-[600px] ${styles.boxWidth} ${styles.flexCenter}`}
@@ -67,7 +80,7 @@ export const Login: FC = () => {
                   </div>
                   <div className="flex flex-col gap-2 my-6 md:my-12">
                     <Button isPrimary={true} text="Login" />
-                    <Link to="/register">
+                    <Link to="/auth/register">
                       <Button isPrimary={false} text="Sign up" />
                     </Link>
                   </div>
@@ -88,7 +101,28 @@ export const Login: FC = () => {
               <div
                 className={`bg-hash_one h-[100%] w-[100%] rounded-l-xl flex-1 ${styles.flexCenter}`}
               >
-                <div className="bg-light_hash h-[80%] w-[80%] rounded-lg"></div>
+                <div className="bg-light_hash h-[400px] top-[50%] sm:top-0 translate-y-[-50%] sm:translate-y-0 sm:h-[80%] sm:w-[80%] rounded-lg absolute sm:relative">
+                  <div
+                    className={`h-full w-full ${
+                      styles.flexCenter
+                    } flex-col justify-evenly px-6 ${
+                      !isOTPFormViewble ? "hidden" : ""
+                    }`}
+                  >
+                    <div className="flex flex-col items-center">
+                      <h3 className="text-[20px] font-poppins font-semibold">
+                        2-Factor Auth
+                      </h3>
+                      <p className="text-[15px]  font-[300]">
+                        Check your email and enter your one-time-password
+                      </p>
+                    </div>
+                    <OTPInputContainer fetchUrl="/auth/validate/2AF-otp" />
+                    <div
+                      className={`${styles.flexCenter} flex-col font-poppins text-[15px] underline `}
+                    ></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

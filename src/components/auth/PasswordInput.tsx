@@ -5,13 +5,14 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { PasswordInputProps } from "../Nav/props";
 
 export const PasswordInput = forwardRef(
-  ({ label, placeholder, ...rest }: PasswordInputProps, ref) => {
+  ({ label, placeholder, isDisabled, ...rest }: PasswordInputProps, ref) => {
     const [isVisible, setIsVisible] = React.useState(false);
 
     const toggleVisibility = () => setIsVisible(!isVisible);
 
     return (
       <Input
+        isDisabled={isDisabled || false}
         ref={ref as Ref<HTMLInputElement>}
         label={label}
         variant="bordered"
