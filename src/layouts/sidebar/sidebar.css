@@ -1,0 +1,15 @@
+@tailwind components;
+
+@layer components {
+  .sidebar-icon {
+    @apply relative w-full flex items-center justify-center h-8 sm:h-10 my-1 sm:my-2 mx-auto
+                shadow-lg bg-hash_one text-white hover:bg-light_hash 
+                rounded-[7px] hover:rounded-xl transition-all duration-300 ease-linear
+                cursor-pointer sm:px-5 px-2;
+  }
+
+  .sidebar-tooltip {
+    @apply absolute w-auto p-2 m-2 min-w-max left-14 rounded-md shadow-md text-white
+               bg-dark_hash text-xs font-bold transition-all duration-100 scale-0 origin-left;
+  }
+}
