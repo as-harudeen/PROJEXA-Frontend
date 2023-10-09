@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import {
   Button,
   Dropdown,
@@ -13,63 +13,109 @@ import { useZodForm } from "../../hooks/useZodForm";
 import { projectSchema } from "../../utils/zodValidator";
 import { toast } from "react-toastify";
 import {
-  PersonalNewProjectProps,
   ProjectFormInterface,
   ProjectReferencesInterface,
 } from "../../interfaces/project/personal/newProject.interface";
 import { ProjectReferenceForm } from "../../components/project/ProjectReferenceForm";
 import { isAxiosError } from "axios";
-import { postRequest } from "../../helper/api.helper";
-import { API_POST_CREATE_NEW_PERSONAL_PROJECT } from "@/constants/api.url";
+import { useParams } from "react-router-dom";
+import { patchRequest } from "../../helper/api.helper";
 
-export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
-  const [projectReferences, setProjectReferences] = useState<
-    ProjectReferencesInterface[]
-  >([]);
+interface EditProjectPros {
+  project_reference: ProjectReferencesInterface[];
+  project_name: string;
+  project_desc: string;
+  project_start_date: Date;
+  project_end_date: Date;
+  toggleEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const EditProject: FC<EditProjectPros> = ({
+  project_reference,
+  project_name,
+  project_desc,
+  project_start_date,
+  project_end_date,
+  toggleEditMode,
+}) => {
   const [editIdx, setEditIdx] = useState<null | number>(null);
-
+  const [projectReferences, setProjectReferences] =
+    useState<ProjectReferencesInterface[]>(project_reference);
+  const { project_id } = useParams();
   const {
     handleSubmit: handle,
     register: reg,
     errors: err,
-    reset,
   } = useZodForm<ProjectFormInterface>(projectSchema);
+  const editProjectWrapper = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(err);
+    editProjectWrapper.current!.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
     if (err.project_name?.message) toast.error(err.project_name?.message);
-    if (err.project_desc?.message) toast.error(err.project_desc?.message);
+    if (err.project_desc?.message) toast.error(err.project_desc.message);
     if (err.project_start_date?.message)
-      toast.error(err.project_start_date?.message);
+      toast.error(err.project_start_date.message);
     if (err.project_end_date?.message)
       toast.error(err.project_end_date.message);
   }, [err]);
 
   const submitHandler = async (data: ProjectFormInterface) => {
     try {
-      await postRequest(API_POST_CREATE_NEW_PERSONAL_PROJECT, {
-        ...data,
+      const update = filterChangedFields(data);
+      await patchRequest(`/project/personal/${project_id}`, {
+        ...update,
         project_reference: projectReferences,
       });
-      toast.success("Project Created Successfully");
-
-      reset();
-      setProjectReferences([]);
+      toggleEditMode(false);
+      toast.success("Project update successfully");
     } catch (err) {
       let message = "OPPS Something wrong";
       if (isAxiosError(err)) {
         if (err.response?.status === 401) message = "Authentication failed";
         else message = err.response?.data.message || message;
       }
-
       toast.error(message);
     }
   };
 
+  const filterChangedFields = (data: ProjectFormInterface) => {
+    const updatedField: Partial<ProjectFormInterface> = {};
+
+    if (data.project_name !== project_name) {
+      updatedField.project_name = data.project_name;
+    }
+
+    if (data.project_desc !== project_desc) {
+      updatedField.project_desc = data.project_desc;
+    }
+
+    if (
+      new Date(data.project_start_date).toDateString() !==
+      new Date(project_start_date).toDateString()
+    ) {
+      updatedField.project_start_date = data.project_start_date;
+    }
+
+    if (
+      new Date(data.project_end_date).toDateString() !=
+      new Date(project_end_date).toDateString()
+    ) {
+      updatedField.project_end_date = data.project_end_date;
+    }
+
+    return updatedField;
+  };
+
   return (
-    <div className="md:px-16 px-6 md:py-8 py-4 text-white rounded-xl">
+    <div
+      ref={editProjectWrapper}
+      className="md:px-16 px-6 md:py-8 py-4 text-white rounded-xl"
+    >
       <h1 className="font-poppins sm:text-xl text-lg md:mb-6 mb-3 font-semibold">
-        New Project
+        Edit Project
       </h1>
       <div className="flex flex-col gap-6 w-full">
         <div className="flex-1 md:px-8 px-3 md:py-6 py-3 bg-hash_one rounded-lg ">
@@ -123,10 +169,10 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
             </ul>
           </div>
           <ProjectReferenceForm
-            projectReferences={projectReferences}
-            setProjectReferences={setProjectReferences}
             editIdx={editIdx}
+            projectReferences={projectReferences}
             setEditIdx={setEditIdx}
+            setProjectReferences={setProjectReferences}
           />
         </div>
         <div className="flex-1 bg-hash_one rounded-lg md:px-8 px-3 md:py-6 py-3">
@@ -137,6 +183,7 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
               </h3>
               <div className="flex gap-4">
                 <Input
+                  defaultValue={project_name}
                   {...reg("project_name")}
                   isRequired
                   variant="bordered"
@@ -155,8 +202,10 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
               </div>
               <div className="flex gap-4">
                 <Input
+                  defaultValue={new Date(project_start_date)
+                    .toISOString()
+                    .substring(0, 10)}
                   {...reg("project_start_date")}
-                  isRequired
                   type="date"
                   variant="bordered"
                   label="Start date"
@@ -172,8 +221,10 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
                   }}
                 />
                 <Input
+                  defaultValue={new Date(project_end_date)
+                    .toISOString()
+                    .substring(0, 10)}
                   {...reg("project_end_date")}
-                  isRequired
                   type="date"
                   variant="bordered"
                   label="End date"
@@ -192,6 +243,7 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
               </div>
               <div>
                 <Textarea
+                  defaultValue={project_desc}
                   isRequired
                   {...reg("project_desc")}
                   variant="bordered"
@@ -207,13 +259,22 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
                   }}
                 />
               </div>
-              <Button
-                type="submit"
-                className="text-white bg-hash_two hover:bg-light_hash mb-4"
-                variant="bordered"
-              >
-                Add project
-              </Button>
+              <div className="flex gap-3">
+                <Button
+                  className="text-white hover:border-red-600 mb-4"
+                  variant="bordered"
+                  onClick={() => toggleEditMode(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="text-white bg-hash_two hover:bg-light_hash mb-4"
+                  variant="bordered"
+                >
+                  Save project
+                </Button>
+              </div>
             </div>
           </form>
         </div>
