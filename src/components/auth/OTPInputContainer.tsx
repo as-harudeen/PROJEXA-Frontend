@@ -1,11 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { axiosInstance } from "../../common/api";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/useAuthContext";
-import { useAppDispatch } from "../../hooks/storeHooks";
-import { offLoading, onLoading } from "../../store/slice/loadingSlice";
+import { postRequest } from "../../helper/api.helper";
 
 interface OTPInputContainerProps {
   fetchUrl: string;
@@ -13,9 +9,6 @@ interface OTPInputContainerProps {
 
 let currOTPIdx = 0;
 export const OTPInputContainer: FC<OTPInputContainerProps> = ({ fetchUrl }) => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { setIsOTPFormViewble } = useAuthContext();
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [activeOtpIdx, setActiveOtpIdx] = useState(0);
   const otpInput = useRef<HTMLInputElement>(null);
@@ -44,14 +37,12 @@ export const OTPInputContainer: FC<OTPInputContainerProps> = ({ fetchUrl }) => {
 
   const validateOTP = async () => {
     try {
-      dispatch(onLoading());
-      await axiosInstance.post(fetchUrl, {
+      await postRequest(fetchUrl, {
         otp: otp.join(""),
       });
       toast.success("OTP Verified");
-      setIsOTPFormViewble(false);
-      navigate("/auth/login");
     } catch (err) {
+      console.log(err);
       let message = "OPPS Something went wrong";
       if (isAxiosError(err)) {
         if (err.response?.status == 400) {
@@ -62,7 +53,6 @@ export const OTPInputContainer: FC<OTPInputContainerProps> = ({ fetchUrl }) => {
       }
       toast.error(message);
     } finally {
-      dispatch(offLoading());
       setOtp(new Array(6).fill(""));
       setActiveOtpIdx(0);
     }

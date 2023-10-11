@@ -3,20 +3,24 @@ import styles from "../../style";
 import { OTPInputContainer } from "./OTPInputContainer";
 import { Button } from "../custom/Button";
 
-
 interface OTPCardProps {
   closeHandler: React.Dispatch<React.SetStateAction<boolean>>;
-  resendOTPFn: () => Promise<void>;
+  resendOTPFn?: () => Promise<void>;
   validateURL: string;
   isOpen: boolean;
 }
 
-export const OTPCard: FC<OTPCardProps> = ({ closeHandler, resendOTPFn, validateURL, isOpen }) => {
+export const OTPCard: FC<OTPCardProps> = ({
+  closeHandler,
+  resendOTPFn,
+  validateURL,
+  isOpen,
+}) => {
   const [isLoading, setisLoading] = useState(false);
 
   const resendOTPHandler = async () => {
     setisLoading(true);
-    await resendOTPFn();
+    if (resendOTPFn != null) await resendOTPFn();
     setisLoading(false);
   };
 

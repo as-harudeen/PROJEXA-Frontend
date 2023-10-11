@@ -1,28 +1,30 @@
 import React, { Ref, forwardRef } from "react";
-import { Input } from "@nextui-org/react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { PasswordInputProps } from "../Nav/props";
+import { Input } from "@components/custom/Input";
+
+interface PasswordInputProps {
+  label: string;
+  placeholder: string;
+}
 
 export const PasswordInput = forwardRef(
-  ({ label, placeholder, isDisabled, ...rest }: PasswordInputProps, ref) => {
+  ({ label, placeholder, ...rest }: PasswordInputProps, ref) => {
     const [isVisible, setIsVisible] = React.useState(false);
 
     const toggleVisibility = () => setIsVisible(!isVisible);
 
     return (
       <Input
-        isDisabled={isDisabled || false}
         ref={ref as Ref<HTMLInputElement>}
         label={label}
         variant="bordered"
         placeholder={placeholder}
         labelPlacement="outside"
-        color="secondary"
-        size="lg"
+        color="border"
+        size="custom"
         {...rest}
         classNames={{
-          label: ["md:text-sm", "font-light", "text-sm", "font-poppins"],
           inputWrapper: ["rounded-[18px]", "border", "border-light_hash"],
           mainWrapper: ["md:h-full"],
         }}
