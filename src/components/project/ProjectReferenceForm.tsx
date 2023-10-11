@@ -12,11 +12,15 @@ interface ProjectReferenceFormProps {
   setProjectReferences: React.Dispatch<
     React.SetStateAction<ProjectReferencesInterface[]>
   >;
+  editIdx: number | null;
+  setEditIdx: React.Dispatch<React.SetStateAction<null | number>>;
 }
 
 export const ProjectReferenceForm: FC<ProjectReferenceFormProps> = ({
   projectReferences,
+  editIdx,
   setProjectReferences,
+  setEditIdx,
 }) => {
   const [formData, setFormData] = useState<ProjectReferencesInterface>({
     title: "",
@@ -25,7 +29,6 @@ export const ProjectReferenceForm: FC<ProjectReferenceFormProps> = ({
 
   const { handleSubmit, register, errors } =
     useZodForm<ProjectReferencesInterface>(referenceSchema);
-  const [editIdx, setEditIdx] = useState<null | number>(null);
 
   const cancelButtonHandler = () => {
     setFormData({
@@ -87,6 +90,19 @@ export const ProjectReferenceForm: FC<ProjectReferenceFormProps> = ({
     if (errors.link?.message) toast.error(errors.link.message);
     if (errors.title?.message) toast.error(errors.title.message);
   }, [errors]);
+
+  useEffect(() => {
+    if (editIdx !== null) {
+      const editFormData = projectReferences.find(
+        (_item, idx) => idx == editIdx
+      );
+      if (editFormData == null) {
+        setEditIdx(null);
+      } else {
+        setFormData(editFormData);
+      }
+    }
+  }, [editIdx]);
 
   return (
     <div>
