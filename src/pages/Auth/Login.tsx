@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import styles from "../../style";
 import { PasswordInput } from "../../components/auth/input/PasswordInput";
-import GoogleIcon from "@mui/icons-material/Google";
 import { AuthInput } from "../../components/auth/input/AuthInput";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthErrorsInterface, LoginFormInterface } from "../../interfaces/Auth";
@@ -14,8 +13,7 @@ import { postRequest } from "../../helper/api.helper";
 import { API_POST_LOGIN, API_POST_VALIDATE_2AF } from "../../constants/api.url";
 import { OTPCard } from "../../components/auth/OTP-card";
 import { Button } from "../../components/custom/Button";
-import { useAppDispatch } from "@hooks/storeHooks";
-import { toggleIsLoggedIn } from "@/store/slice/useSlice";
+import { useUserStore } from "@/store/useUserStore";
 
 export const Login: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,17 +22,15 @@ export const Login: FC = () => {
     useZodForm<LoginFormInterface>(loginSchema);
   useAuthErrorLog(errors as AuthErrorsInterface);
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const toggleIsLoggin = useUserStore(state => state.toggleIsLoggedIn);
 
-  console.log(isLoading);
   const FormSubmitHandler = async (data: LoginFormInterface) => {
     try {
-      console.log("hello");
       setIsLoading(true);
       const res = await postRequest(API_POST_LOGIN, data);
       if (res.status === 200) {
         toast.success("Login success");
-        dispatch(toggleIsLoggedIn(true));
+        toggleIsLoggin(true);
         navigate("/personal/project");
       } else {
         toast.success("OTP sent successfully");
