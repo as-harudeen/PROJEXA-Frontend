@@ -3,6 +3,7 @@ import { MdAddToPhotos } from "react-icons/md";
 import { FC,useRef, useState } from "react";
 import { ProjectStageInterface } from "../../interfaces/project/personal/space/stage.interface";
 import { ProjectStage } from "@components/project/personal/space/ProjectStage";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 export const ProjectSpace: FC = () => {
   const stageInpRef = useRef<HTMLInputElement>(null);
@@ -10,25 +11,26 @@ export const ProjectSpace: FC = () => {
     []
   );
 
-
-
-
-
-
-
-
   return (
     <div className="text-white font-poppins px-16 py-8">
       <div className="mb-8">
         <h3 className="font-semibold text-xl">Project Space</h3>
       </div>
 
+      <DragDropContext onDragEnd={(result) => {}}>
         <div className="flex gap-5 px-4 py-6 ">
           {projectStages.map((stage) => (
+            <Droppable key={stage.stage_id} droppableId={stage.stage_id}>
+              {(provided) => (
                 <ProjectStage
+                  placeholder={provided.placeholder}
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
                   {...stage}
                   setParentState={setProjectStages}
                 />
+              )}
+            </Droppable>
           ))}
           <div>
             <div className="relative max-w-[300px]">
@@ -56,6 +58,7 @@ export const ProjectSpace: FC = () => {
             </div>
           </div>
         </div>
+      </DragDropContext>
     </div>
   );
 };
