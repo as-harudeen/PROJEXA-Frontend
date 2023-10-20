@@ -7,15 +7,17 @@ import { API_POST_CREATE_STAGE_TASK } from "@/constants/api.url";
 import { useParams } from "react-router-dom";
 
 import { Draggable } from "react-beautiful-dnd";
+import { TaskDetailsInterface } from "@pages/Personal-Project/ProjectSpace";
 
 type ProjectStageProps = {
   setParentState: React.Dispatch<React.SetStateAction<ProjectStageInterface[]>>;
+  setTaskDetails: React.Dispatch<React.SetStateAction<TaskDetailsInterface | null>>;
   placeholder: React.ReactNode;
 } & ProjectStageInterface;
 
 export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
   (
-    { stage_id, stage_title, tasks, setParentState, placeholder, ...props },
+    { stage_id, stage_title, tasks, setParentState, placeholder,setTaskDetails, ...props },
     ref
   ) => {
     const taskInpRef = useRef<HTMLInputElement>(null);
@@ -30,6 +32,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
       const newTask = {
         task_id: Date.now().toString(),
         task_title: taskTitle,
+        task_desc: '',
       };
 
       setParentState((prev) =>
@@ -42,6 +45,10 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
       );
       taskInpRef.current!.value = "";
     };
+
+    const taskOnClickHandler = ({task_id, task_title, task_desc}: {task_id: string, task_title: string, task_desc: string}) => {
+      setTaskDetails({stage_id, task_id, task_title, task_desc});
+    }
     return (
       <div {...props} className="border-2 border-white px-6 py-4 h-full w-[360px] rounded-md bg-hash_one bg-opacity-50">
         <div className="mb-4">
@@ -57,6 +64,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
               >
                 {(provided) => (
                   <div
+                  onClick={() => taskOnClickHandler(task)}
                     {...provided.dragHandleProps}
                     {...provided.draggableProps}
                     ref={provided.innerRef}
