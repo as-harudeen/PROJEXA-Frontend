@@ -1,7 +1,9 @@
 import { test_img } from "@/assets";
 import { Button } from "@components/custom/Button";
 import { Input } from "@components/custom/Input";
+import { getRequest } from "@/helper/api.helper";
 import { Textarea } from "@nextui-org/react";
+import { useQuery } from "@tanstack/react-query";
 import { ChangeEvent, FC, useRef, useState } from "react";
 import { FiCamera } from "react-icons/fi";
 
@@ -13,7 +15,25 @@ enum BasicInfoFields {
   avatar,
 }
 
+interface UserResponse {
+  user_email: string;
+  user_name: string;
+  user_profile: string;
+  summary?: string;
+  birthday?: string;
+}
 export const Profile: FC = () => {
+  const {
+    isLoading,
+    error,
+    data: user,
+  } = useQuery({
+    queryKey: ["user", "profile"],
+    queryFn: async () => {
+      const res = await getRequest("user");
+      return res.data as UserResponse;
+    },
+  });
   const [editField, setEditField] = useState<BasicInfoFields | null>(null);
   const avatarInput = useRef<HTMLInputElement>(null);
   const [avatar, setAvatar] = useState<null | File>(null);
@@ -26,6 +46,8 @@ export const Profile: FC = () => {
   const avatarInputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.currentTarget.files) setAvatar(e.currentTarget.files[0]);
   };
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
   return (
     <div className="text-white px-16 py-12">
       <div className="px-14 flex items-center bg-hash_one bg-opacity-20 w-full h-[400px]">
@@ -42,7 +64,7 @@ export const Profile: FC = () => {
             />
             <img
               className="w-[200px] group-hover:opacity-50 h-[200px] object-cover rounded-2xl border-[7px] border-light_hash"
-              src={`${avatar ? URL.createObjectURL(avatar) : test_img}`}
+              src={`${avatar ? URL.createObjectURL(avatar): user!.user_profile ? "": test_img }`}
               alt=""
             />
             {editField === BasicInfoFields.avatar && (
@@ -57,9 +79,9 @@ export const Profile: FC = () => {
             </div>
           </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-2xl font-poppins">Nargees</h2>
+            <h2 className="text-2xl font-poppins">{user!.user_name}</h2>
             <span className="text-large font-poppins text-slate-300">
-              nargees@mine.com
+              {user!.user_email}
             </span>
           </div>
         </div>
@@ -84,10 +106,10 @@ export const Profile: FC = () => {
               </div>
               <div>
                 {editField !== BasicInfoFields.name ? (
-                  <span className="text-xl">Asharudeen Ali KT</span>
+                  <span className="text-xl">{user!.user_name}</span>
                 ) : (
                   <div className="flex flex-col gap-2">
-                    <Input defaultValue="Asharudeen Ali KT" />
+                    <Input defaultValue={user!.user_name} />
                     <div className="flex gap-2">
                       <Button>save</Button>
                       <Button onClick={() => setEditField(null)}>cancel</Button>
@@ -167,29 +189,13 @@ export const Profile: FC = () => {
               </div>
               <div>
                 {editField !== BasicInfoFields.summary ? (
-                  <span className="text-xl">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Impedit consequatur porro, commodi doloremque, optio facere
-                    soluta quos dignissimos velit, at perspiciatis quibusdam
-                    placeat explicabo eius minima sunt nulla! Deserunt,
-                    voluptatum? Harum repudiandae exercitationem ab temporibus
-                    sequi totam laudantium, quam eligendi, ipsam iste nulla vero
-                    sint iusto ipsa! Natus aliquid tempore repellat eum
-                    perferendis numquam, ad at, explicabo eos non aut.
+                  <span className="text-xl">{user!.summary || ""}
                   </span>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Textarea
                       className="text-black"
-                      defaultValue="Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Impedit consequatur porro, commodi doloremque, optio facere
-                    soluta quos dignissimos velit, at perspiciatis quibusdam
-                    placeat explicabo eius minima sunt nulla! Deserunt,
-                    voluptatum? Harum repudiandae exercitationem ab temporibus
-                    sequi totam laudantium, quam eligendi, ipsam iste nulla vero
-                    sint iusto ipsa! Natus aliquid tempore repellat eum
-                    perferendis numquam, ad at, explicabo eos non aut.
-                    "
+                      defaultValue={user!.summary || ""}
                     />
                     <div className="flex gap-2">
                       <Button>save</Button>
