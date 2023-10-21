@@ -1,10 +1,11 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { Button } from "../../components/custom/Button";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { ProjectReferencesInterface } from "../../interfaces/project/personal/newProject.interface";
 import moment from "moment";
 import { EditProject } from "./EditProject";
 import { getRequest } from "../../helper/api.helper";
+import { useQuery } from "@tanstack/react-query";
 
 interface ProjectInterface {
   project_id: string;
@@ -18,27 +19,23 @@ interface ProjectInterface {
 
 export const ProjectDetails: FC = () => {
   const [isEditModeOn, setIsEditModeOn] = useState(false);
-  const [project, setProject] = useState<ProjectInterface | null>(null);
   const { project_id } = useParams();
 
-  const fetchProjectDetails = async () => {
-    try {
-      const res = await getRequest(`/project/personal/${project_id}`);
-      setProject(res.data as ProjectInterface);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const {data: project, error, isLoading} = useQuery({
+    queryKey: ["project", project_id],
+    queryFn: async (): Promise<ProjectInterface> => {
+     const res = await getRequest(`/project/personal/${project_id}`);
+     return res.data as ProjectInterface
+  }})
 
-  useEffect(() => {
-    fetchProjectDetails();
-  }, []);
+  if(error) return <div className="text-white">{error.message}</div>
+  if(isLoading) return <div className="text-white">Loading</div>
 
   return (
     <>
-      {project !== null && (
+      {project != null && (
         <>
-          <div className="h-scree px-16 py-12 text-white font-poppins">
+          <div className="px-16 py-12 text-white font-poppins">
             <div className="flex justify-between">
               <h2 className="font-poppins text-2xl font-semibold mb-3">
                 {project.project_name}
@@ -79,11 +76,15 @@ export const ProjectDetails: FC = () => {
 
               <div className="py-16 flex gap-3">
                 <Button onClick={() => setIsEditModeOn(true)}>Edit</Button>
-                <Button>My Task</Button>
+                <Link to="space">
+                  <Button>Space</Button>
+                </Link>
               </div>
             </div>
           </div>
-          {isEditModeOn && <EditProject toggleEditMode={setIsEditModeOn} {...project} />}
+          {isEditModeOn && (
+            <EditProject toggleEditMode={setIsEditModeOn} {...project} />
+          )}
         </>
       )}
     </>
