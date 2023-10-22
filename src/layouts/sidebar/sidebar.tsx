@@ -1,18 +1,21 @@
 import { FC } from "react";
-import { FiLogOut, FiSettings } from "react-icons/fi";
+import { FiLogOut, FiSettings, FiUser } from "react-icons/fi";
+import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { MdMenuOpen } from "react-icons/md";
-import { useAppDispatch } from "../../hooks/storeHooks";
 import "./sidebar.css";
-import { closeSideBar } from "../../store/slice/sideBarSlice";
+import { Link, useLocation } from "react-router-dom";
+import { useSidebarStore } from "@/store/useSidebarStore";
+import { useUserStore } from "@/store/useUserStore";
 
 export const SideBar: FC = () => {
-  const dispatch = useAppDispatch();
+  const toggleSidebar = useSidebarStore((state) => state.toggle);
+  const toggleLoggedIn = useUserStore((state) => state.toggleIsLoggedIn);
   return (
     <div
-      className={`relative h-screen min-h-[400px] transition-all duration-300 w-[200px] sm:w-[260px] m-0 lg:block felx flex-col bg-hash_two rounded-s-md sm:rounded-lg`}
+      className={`relative z-[999] min-h-screen h-full transition-all duration-300 w-[200px] sm:w-[260px] m-0 lg:block felx flex-col bg-hash_two rounded-s-md sm:rounded-lg`}
     >
       <MdMenuOpen
-        onClick={() => dispatch(closeSideBar())}
+        onClick={() => toggleSidebar(false)}
         className="text-white absolute top-[50%] right-[-12px] translate-y-[-50%] cursor-pointer rotate-90"
         size="28"
       />
@@ -21,30 +24,92 @@ export const SideBar: FC = () => {
           PROJEXA
         </h1>
         <div className="flex-1 flex flex-col w-full">
-          <SideBarIcon title="Personal Project" />
-          <SideBarIcon title="Team Project" />
-          <SideBarIcon title="Company Project" />
+          <Link to="/project/personal">
+            <SideBarItem title="Personal Project" />
+          </Link>
+          <SideBarSubItemWrapper indexPath="/project/personal">
+            <Link to="/project/personal/new">
+              <SideBarSubItem
+                title="New Project"
+                icon={<AiOutlineAppstoreAdd />}
+              />
+            </Link>
+          </SideBarSubItemWrapper>
+          <SideBarItem title="Team Project" />
+          <SideBarSubItemWrapper indexPath="/project/team">
+            <SideBarSubItem
+              title="New Project"
+              icon={<AiOutlineAppstoreAdd />}
+            />
+          </SideBarSubItemWrapper>
+          <SideBarItem title="Company Project" />
+          <SideBarSubItemWrapper indexPath="/project/company">
+            <SideBarSubItem
+              title="New Project"
+              icon={<AiOutlineAppstoreAdd />}
+            />
+          </SideBarSubItemWrapper>
         </div>
-        <div>
-          <SideBarIcon title="Settings" icon={<FiSettings size="18" />} />
-          <SideBarIcon title="Logout" icon={<FiLogOut size="18" />} />
+        <div className="flex flex-col">
+          <Link to="/user/profile">
+            <SideBarItem title="Profile" icon={<FiUser size="18" />} />
+          </Link>
+          <Link to="/user/settings">
+            <SideBarItem title="Settings" icon={<FiSettings size="18" />} />
+          </Link>
+          <button onClick={() => toggleLoggedIn(false)} className="w-full">
+            <SideBarItem title="Logout" icon={<FiLogOut size="18" />} />
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-interface SideBarIconProps {
+interface SideBarItemProps {
   icon?: React.ReactNode;
   title: string;
 }
 
-const SideBarIcon: FC<SideBarIconProps> = ({ icon, title }) => (
-  <div className="sidebar-icon group">
+const SideBarItem: FC<SideBarItemProps> = ({ icon, title }) => (
+  <div className="sidebar-item group">
     <div className="flex-1 flex justify-between items-center">
-      <span className="font-nunito font-medium sm:font-bold text-[12px] sm:text-[13px]">{title}</span>
+      <span className="font-nunito font-medium sm:font-bold text-[12px] sm:text-[13px]">
+        {title}
+      </span>
       {icon && icon}
     </div>
-    {/* <span className="sidebar-tooltip group-hover:scale-100">{text}</span> */}
+  </div>
+);
+
+interface SideBarSubItemContainerProps {
+  indexPath: string;
+  children: React.ReactNode;
+}
+
+const SideBarSubItemWrapper: FC<SideBarSubItemContainerProps> = ({
+  indexPath,
+  children,
+}) => {
+  const location = useLocation();
+  return (
+    <div
+      className={`${
+        location.pathname === indexPath ? "flex" : "hidden"
+      } flex-col items-end w-full`}
+    >
+      <div className="w-[80%]">{children}</div>
+    </div>
+  );
+};
+
+const SideBarSubItem: FC<SideBarItemProps> = ({ icon, title }) => (
+  <div className="sidebar-sub-item group">
+    <div className="flex-1 flex justify-between items-center">
+      <span className="font-nunito font-medium sm:font-bold text-[12px] sm:text-[13px]">
+        {title}
+      </span>
+      {icon && icon}
+    </div>
   </div>
 );

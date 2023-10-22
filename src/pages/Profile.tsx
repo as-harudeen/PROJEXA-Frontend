@@ -73,8 +73,8 @@ export const Profile: FC = () => {
               src={`${
                 avatarState
                   ? URL.createObjectURL(avatarState)
-                  : user!.user_profile
-                  ? `http://localhost:3000/${user!.user_profile}`
+                  : user?.user_profile
+                  ? `http://localhost:3000/${user?.user_profile}`
                   : test_img
               }`}
               alt=""
@@ -103,9 +103,9 @@ export const Profile: FC = () => {
             </div>
           </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-2xl font-poppins">{user!.user_name}</h2>
+            <h2 className="text-2xl font-poppins">{user?.user_name || ""}</h2>
             <span className="text-large font-poppins text-slate-300">
-              {user!.user_email}
+              {user?.user_email}
             </span>
           </div>
         </div>
@@ -130,7 +130,7 @@ export const Profile: FC = () => {
               </div>
               <div>
                 {editField !== BasicInfoFields.name ? (
-                  <span className="text-xl">{user!.user_name}</span>
+                  <span className="text-xl">{user?.user_name || ""}</span>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Input
@@ -218,7 +218,7 @@ export const Profile: FC = () => {
               </div>
               <div>
                 {editField !== BasicInfoFields.summary ? (
-                  <span className="text-xl">{user!.summary || ""}</span>
+                  <span className="text-xl">{user?.summary || ""}</span>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Textarea

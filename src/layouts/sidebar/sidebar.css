@@ -1,11 +1,18 @@
 @tailwind components;
 
 @layer components {
-  .sidebar-icon {
+  .sidebar-item {
     @apply relative w-full flex items-center justify-center h-8 sm:h-10 my-1 sm:my-2 mx-auto
                 shadow-lg bg-hash_one text-white hover:bg-light_hash 
                 rounded-[7px] hover:rounded-xl transition-all duration-300 ease-linear
                 cursor-pointer sm:px-5 px-2;
+  }
+
+  .sidebar-sub-item {
+    @apply relative w-full flex items-center justify-center h-8 sm:h-10 my-1 sm:my-2 mx-auto
+                shadow-lg text-white  
+                rounded-[7px] hover:rounded-xl transition-all duration-300 ease-in
+                cursor-pointer sm:px-5 px-2 border-b-2 border-light_hash hover:border-e-5;
   }
 
   .sidebar-tooltip {

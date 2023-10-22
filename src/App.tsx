@@ -1,28 +1,40 @@
 import { Login } from "./pages/Auth/Login";
 import { Routes, Route } from "react-router-dom";
 import { Register } from "./pages/Auth/Register";
-import { Auth } from "./components/auth/Auth";
-import { FadeLoader } from "react-spinners";
+import { OverView } from "./pages/Personal-Project/OverView";
+import { NewProject } from "./pages/Personal-Project/NewProject";
+import { ProjectDetails } from "./pages/Personal-Project/ProjectDetails";
+import { AuthRoute } from "./utils/AuthRoute";
+import { ProtectedRoute } from "./utils/ProtectedRoute";
+import { ProjectSpace } from "@pages/Personal-Project/ProjectSpace";
+
 import "./App.css";
-import { useAppSelector } from "./hooks/storeHooks";
+import { Settings } from "@pages/Settings";
+import { Profile } from "@pages/Profile";
 
 export const App = () => {
-  const isLoading = useAppSelector((state) => state.loading);
   return (
-    <>
-      {isLoading && (
-        <div className={"parentDisable"}>
-          <div className="overlay-box">
-            <FadeLoader color={"white"} />
-          </div>
-        </div>
-      )}
-      <Routes>
-        <Route path="/auth" element={<Auth />}>
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
+    <Routes>
+      <Route path="/auth" element={<AuthRoute />}>
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+      </Route>
+      <Route path="/" element={<ProtectedRoute />}>
+        <Route path="project">
+          <Route path="personal">
+            <Route index element={<OverView />} />
+            <Route path="new" element={<NewProject />} />
+            <Route path=":project_id">
+              <Route index element={<ProjectDetails />} />
+              <Route path="space" element={<ProjectSpace />} />
+            </Route>
+          </Route>
         </Route>
-      </Routes>
-    </>
+        <Route path="user">
+          <Route path="profile" element={<Profile />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+      </Route>
+    </Routes>
   );
 };

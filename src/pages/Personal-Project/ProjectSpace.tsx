@@ -12,13 +12,23 @@ import {
 import { GetProjectStagesResponseInterface } from "../../interfaces/api-response.interface";
 
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
+import { TaskDetails } from "@components/project/personal/space/TaskDetails";
 
+export interface TaskDetailsInterface {
+  stage_id: string;
+  task_id: string;
+  task_title: string;
+  task_desc: string;
+}
 export const ProjectSpace: FC = () => {
   const stageInpRef = useRef<HTMLInputElement>(null);
   const [projectStages, setProjectStages] = useState<ProjectStageInterface[]>(
     []
   );
 
+  const [taskDetails, setTaskDetails] = useState<TaskDetailsInterface | null>(
+    null
+  );
   const { project_id } = useParams();
 
   const addProjectStageHandler = async () => {
@@ -37,7 +47,6 @@ export const ProjectSpace: FC = () => {
 
   const getProjectStages = async () => {
     const res = await getRequest(`${API_GET_PROJECT_STAGES}/${project_id}`);
-    console.log(res.data);
     setProjectStages(res.data as GetProjectStagesResponseInterface[]);
   };
 
@@ -51,7 +60,9 @@ export const ProjectSpace: FC = () => {
 
     if (destination.droppableId === source.droppableId) {
       if (destination.index !== source.index) {
-        await patchRequest(`task/${source.droppableId}/${draggableId}`, {new_position: destination.index});
+        await patchRequest(`task/${source.droppableId}/${draggableId}`, {
+          new_position: destination.index,
+        });
         setProjectStages((prev) =>
           prev.map((stage) => {
             if (stage.stage_id === source.droppableId) {
@@ -78,13 +89,16 @@ export const ProjectSpace: FC = () => {
       if (!dropStage) return;
 
       dropStage.tasks.splice(destination.index, 0, task);
-      await patchRequest(`task/${source.droppableId}/${draggableId}`, {new_position: destination.index, new_stage_id: destination.droppableId});
+      await patchRequest(`task/${source.droppableId}/${draggableId}`, {
+        new_position: destination.index,
+        new_stage_id: destination.droppableId,
+      });
       setProjectStages(newProjectStages);
     }
   };
 
   return (
-    <div className="text-white font-poppins px-16 py-8">
+    <div className="text-white font-poppins px-16 py-8 relative">
       <div className="mb-8">
         <h3 className="font-semibold text-xl">Project Space</h3>
       </div>
@@ -100,6 +114,7 @@ export const ProjectSpace: FC = () => {
                   ref={provided.innerRef}
                   {...stage}
                   setParentState={setProjectStages}
+                  setTaskDetails={setTaskDetails}
                 />
               )}
             </Droppable>
@@ -131,6 +146,13 @@ export const ProjectSpace: FC = () => {
           </div>
         </div>
       </DragDropContext>
+      {taskDetails !== null && (
+        <TaskDetails
+          setTaskDetails={setTaskDetails}
+          setProjectStages={setProjectStages}
+          {...taskDetails}
+        />
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { patchRequest } from "@/helper/api.helper";
 import {
   Popover,
   PopoverContent,
@@ -8,6 +9,12 @@ import { FC } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export const Settings: FC = () => {
+  const twoFactorAuthToggleHandler = async (isSelected: boolean) => {
+    await patchRequest(
+      `user/two-factor-auth/${isSelected ? "enable" : "disable"}`,
+      {}
+    );
+  };
   return (
     <div className="text-white px-16 py-12">
       <div className="sm:mb-10 mb-5">
@@ -34,7 +41,10 @@ export const Settings: FC = () => {
               <PopoverContent>
                 {(titleProps) => (
                   <div className="top-0 px-1 py-2">
-                    <h3 className="text-medium font-poppins font-bold" {...titleProps}>
+                    <h3
+                      className="text-medium font-poppins font-bold"
+                      {...titleProps}
+                    >
                       Two-factor authentication
                     </h3>
                     <div className="text-normal font-poppins max-w-[300px]">
@@ -50,7 +60,10 @@ export const Settings: FC = () => {
             </Popover>
           </div>
           <div>
-            <Switch className="" />
+            <Switch
+              defaultSelected
+              onValueChange={twoFactorAuthToggleHandler}
+            />
           </div>
         </div>
       </div>

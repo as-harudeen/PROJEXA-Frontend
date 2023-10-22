@@ -7,7 +7,7 @@ import axios from "axios";
  * It also Inclueds credentials with requests.
  */
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",

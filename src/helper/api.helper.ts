@@ -6,8 +6,8 @@ import { axiosInstance } from "../lib/api";
  * @param {string} url - The URL to fetch data from.
  * @returns {Promise<AxiosResponse>} A promise that resolves to the Axios response.
  */
-export const getRequest = async (url: string) => {
-  return await axiosInstance.get(url);
+export const getRequest = async <T>(url: string) => {
+  return await axiosInstance.get<T>(url);
 };
 
 /**

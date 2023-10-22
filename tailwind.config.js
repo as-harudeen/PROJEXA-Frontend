@@ -12,10 +12,13 @@ module.exports = {
         secondary: "#fff",
         light_hash: "#7A7A7A",
         hash_one: "#4B4B4B",
-        dark_hash: "#292929"
+        dark_hash: "#292929",
+        hash_two: "#242424",
+        hash_dark_two: "#0A0A0A"
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],
+        nunito: ["Nunito", "sans-serif"]
       },
     },
     screens: {

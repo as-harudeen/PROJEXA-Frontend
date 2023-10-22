@@ -43,7 +43,7 @@ export const OverView: FC = () => {
         });
         url += `f=${JSON.stringify(keys)}`;
       }
-
+      console.log(url);
       const res = await getRequest(url);
       setProjects(res.data as ProjectInterface[]);
     } catch (err) {
@@ -53,7 +53,7 @@ export const OverView: FC = () => {
 
   const fetchProjectscount = async () => {
     try {
-      const res = await getRequest("/project/personal/count");
+      const res = await getRequest<number>("/project/personal/count");
       const pageNumber = Math.ceil(+res.data / 3);
       setTotalPage(pageNumber);
     } catch (err) {
@@ -61,7 +61,6 @@ export const OverView: FC = () => {
     }
   };
 
-  console.log(searchValue, selectedKeys);
 
   useEffect(() => {
     fetchProjectscount();
