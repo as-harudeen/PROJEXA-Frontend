@@ -1,55 +1,61 @@
 import { test_img } from "@/assets";
 import { Button } from "@components/custom/Button";
 import { Input } from "@components/custom/Input";
-import { getRequest } from "@/helper/api.helper";
 import { Textarea } from "@nextui-org/react";
-import { useQuery } from "@tanstack/react-query";
-import { ChangeEvent, FC, useRef, useState } from "react";
+import { FC } from "react";
 import { FiCamera } from "react-icons/fi";
+import { useUserProfile } from "@hooks/useEditProfile";
+import { Loading } from "@components/project/Loading";
 
-enum BasicInfoFields {
+export interface UpdatedDataStateInterface {
+  user_name: string;
+  user_profile: string;
+  summary: string;
+}
+
+export enum BasicInfoFields {
   name,
   gender,
   birthday,
   summary,
-  avatar,
+  avatarState,
 }
 
-interface UserResponse {
-  user_email: string;
-  user_name: string;
-  user_profile: string;
-  summary?: string;
-  birthday?: string;
-}
 export const Profile: FC = () => {
   const {
-    isLoading,
-    error,
-    data: user,
-  } = useQuery({
-    queryKey: ["user", "profile"],
-    queryFn: async () => {
-      const res = await getRequest("user");
-      return res.data as UserResponse;
-    },
-  });
-  const [editField, setEditField] = useState<BasicInfoFields | null>(null);
-  const avatarInput = useRef<HTMLInputElement>(null);
-  const [avatar, setAvatar] = useState<null | File>(null);
+    getUser,
 
-  const editAvatarHandler = () => {
-    if (editField === null) setEditField(BasicInfoFields.avatar);
-    avatarInput.current!.click();
-  };
+    editUserMutation,
+    updateUserProfileMutation,
 
-  const avatarInputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.currentTarget.files) setAvatar(e.currentTarget.files[0]);
-  };
-  if (isLoading) return <div>Loading...</div>;
+    avatarInputRef,
+    avatarState,
+    setAvatarState,
+
+    editField,
+    setEditField,
+
+    editedDataState,
+
+    cancelButtonHandler,
+
+    editAvatarHandler,
+    avatarInputChangeHandler,
+    updateProfileHandler,
+
+    userNameOnChangeHandler,
+    updateUserNameHandler,
+
+    summaryOnChangeHandler,
+    updateSummaryHandler,
+  } = useUserProfile();
+
+  const { isLoading, data: user, error } = getUser;
+
   if (error) return <div>{error.message}</div>;
   return (
     <div className="text-white px-16 py-12">
+      {isLoading || (editUserMutation.isPending && <Loading />)}
       <div className="px-14 flex items-center bg-hash_one bg-opacity-20 w-full h-[400px]">
         <div className="flex gap-10">
           <div
@@ -58,19 +64,37 @@ export const Profile: FC = () => {
           >
             <input
               onChange={avatarInputChangeHandler}
-              ref={avatarInput}
+              ref={avatarInputRef}
               hidden
               type="file"
             />
             <img
               className="w-[200px] group-hover:opacity-50 h-[200px] object-cover rounded-2xl border-[7px] border-light_hash"
-              src={`${avatar ? URL.createObjectURL(avatar): user!.user_profile ? "": test_img }`}
+              src={`${
+                avatarState
+                  ? URL.createObjectURL(avatarState)
+                  : user!.user_profile
+                  ? `http://localhost:3000/${user!.user_profile}`
+                  : test_img
+              }`}
               alt=""
             />
-            {editField === BasicInfoFields.avatar && (
-              <div className="flex gap-3">
-                <Button>save</Button>
-                <Button onClick={() => setEditField(null)}>cancel</Button>
+            {editField === BasicInfoFields.avatarState && (
+              <div className="mt-3 flex flex-col gap-3">
+                <Button
+                  isLoading={updateUserProfileMutation.isPending}
+                  onClick={updateProfileHandler}
+                >
+                  save
+                </Button>
+                <Button
+                  onClick={() => {
+                    cancelButtonHandler("user_profile");
+                    setAvatarState(null);
+                  }}
+                >
+                  cancel
+                </Button>
               </div>
             )}
             <div className="scale-0 group-hover:scale-100 absolute flex flex-col items-center right-[50%] top-[50%] translate-x-[50%] translate-y-[-50%]">
@@ -109,10 +133,15 @@ export const Profile: FC = () => {
                   <span className="text-xl">{user!.user_name}</span>
                 ) : (
                   <div className="flex flex-col gap-2">
-                    <Input defaultValue={user!.user_name} />
+                    <Input
+                      defaultValue={editedDataState.user_name}
+                      onChange={userNameOnChangeHandler}
+                    />
                     <div className="flex gap-2">
-                      <Button>save</Button>
-                      <Button onClick={() => setEditField(null)}>cancel</Button>
+                      <Button onClick={updateUserNameHandler}>save</Button>
+                      <Button onClick={() => cancelButtonHandler("user_name")}>
+                        cancel
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -189,17 +218,19 @@ export const Profile: FC = () => {
               </div>
               <div>
                 {editField !== BasicInfoFields.summary ? (
-                  <span className="text-xl">{user!.summary || ""}
-                  </span>
+                  <span className="text-xl">{user!.summary || ""}</span>
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Textarea
+                      onChange={summaryOnChangeHandler}
                       className="text-black"
-                      defaultValue={user!.summary || ""}
+                      defaultValue={editedDataState.summary || ""}
                     />
                     <div className="flex gap-2">
-                      <Button>save</Button>
-                      <Button onClick={() => setEditField(null)}>cancel</Button>
+                      <Button onClick={updateSummaryHandler}>save</Button>
+                      <Button onClick={() => cancelButtonHandler("summary")}>
+                        cancel
+                      </Button>
                     </div>
                   </div>
                 )}
