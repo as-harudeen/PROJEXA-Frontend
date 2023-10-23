@@ -8,49 +8,86 @@ import { useParams } from "react-router-dom";
 
 import { Draggable } from "react-beautiful-dnd";
 import { TaskDetailsInterface } from "@pages/Personal-Project/ProjectSpace";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ProjectStageProps = {
-  setParentState: React.Dispatch<React.SetStateAction<ProjectStageInterface[]>>;
-  setTaskDetails: React.Dispatch<React.SetStateAction<TaskDetailsInterface | null>>;
+  setTaskDetails: React.Dispatch<
+    React.SetStateAction<TaskDetailsInterface | null>
+  >;
   placeholder: React.ReactNode;
 } & ProjectStageInterface;
 
 export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
   (
-    { stage_id, stage_title, tasks, setParentState, placeholder,setTaskDetails, ...props },
+    { stage_id, stage_title, tasks, placeholder, setTaskDetails, ...props },
     ref
   ) => {
+    const queryClient = useQueryClient();
     const taskInpRef = useRef<HTMLInputElement>(null);
     const { project_id } = useParams();
 
     const addTaskHandler = async () => {
       const taskTitle = taskInpRef.current!.value;
-      await postRequest(
+      const temp_task_id = Date.now().toString();
+      const newTask = {
+        task_id: temp_task_id,
+        task_title: taskTitle,
+        task_desc: "",
+      };
+      queryClient.setQueryData(
+        ["project", "personal", "stages"],
+        (prev: ProjectStageInterface[]) =>
+          prev.map((stage) => {
+            if (stage.stage_id === stage_id) {
+              return { ...stage, tasks: [...stage.tasks, newTask] };
+            }
+            return stage;
+          })
+      );
+      const res = await postRequest(
         `${API_POST_CREATE_STAGE_TASK}/${project_id}/${stage_id}`,
         { task_title: taskTitle }
       );
-      const newTask = {
-        task_id: Date.now().toString(),
-        task_title: taskTitle,
-        task_desc: '',
-      };
+      //todo change the response type to another folder
+      const task_id = (res.data as { task_id: string }).task_id;
 
-      setParentState((prev) =>
-        prev.map((stage) => {
-          if (stage.stage_id === stage_id) {
-            return { ...stage, tasks: [...stage.tasks, newTask] };
-          }
-          return stage;
-        })
+      queryClient.setQueryData(
+        ["project", "personal", "stages"],
+        (prev: ProjectStageInterface[]) =>
+          prev.map((stage) => {
+            if (stage.stage_id === stage_id) {
+              return {
+                ...stage,
+                tasks: stage.tasks.map((task) => {
+                  if (task.task_id === temp_task_id) {
+                    task.task_id = task_id;
+                  }
+                  return task;
+                }),
+              };
+            }
+            return stage;
+          })
       );
       taskInpRef.current!.value = "";
     };
 
-    const taskOnClickHandler = ({task_id, task_title, task_desc}: {task_id: string, task_title: string, task_desc: string}) => {
-      setTaskDetails({stage_id, task_id, task_title, task_desc});
-    }
+    const taskOnClickHandler = ({
+      task_id,
+      task_title,
+      task_desc,
+    }: {
+      task_id: string;
+      task_title: string;
+      task_desc: string;
+    }) => {
+      setTaskDetails({ stage_id, task_id, task_title, task_desc });
+    };
     return (
-      <div {...props} className="border-2 border-white px-6 py-4 h-full w-[360px] rounded-md bg-hash_one bg-opacity-50">
+      <div
+        {...props}
+        className="border-2 border-white px-6 py-4 h-full w-[360px] rounded-md bg-hash_one bg-opacity-50"
+      >
         <div className="mb-4">
           <h6 className="text-white font-semibold">{stage_title}</h6>
         </div>
@@ -64,7 +101,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
               >
                 {(provided) => (
                   <div
-                  onClick={() => taskOnClickHandler(task)}
+                    onClick={() => taskOnClickHandler(task)}
                     {...provided.dragHandleProps}
                     {...provided.draggableProps}
                     ref={provided.innerRef}
@@ -93,4 +130,3 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
     );
   }
 );
-

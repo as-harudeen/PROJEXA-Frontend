@@ -6,6 +6,7 @@ import { FC, useRef, useState } from "react";
 import { MdClose, MdEditNote } from "react-icons/md";
 import { TaskDetailsInterface } from "@pages/Personal-Project/ProjectSpace";
 import { ProjectStageInterface } from "@/interfaces/project/personal/space/stage.interface";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface EditTaskRequestBodyInterface {
   task_title?: string;
@@ -20,9 +21,6 @@ interface TaskDetailsProps {
   setTaskDetails: React.Dispatch<
     React.SetStateAction<TaskDetailsInterface | null>
   >;
-  setProjectStages: React.Dispatch<
-    React.SetStateAction<ProjectStageInterface[]>
-  >;
 }
 
 export const TaskDetails: FC<TaskDetailsProps> = ({
@@ -31,8 +29,9 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
   task_title,
   task_desc,
   setTaskDetails,
-  setProjectStages,
+  //   setProjectStages,
 }) => {
+  const queyrClient = useQueryClient();
   const [onEditMode, setOnEditMode] = useState(false);
   const titleInpRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLInputElement>(null);
@@ -63,21 +62,24 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
       }
       return prev;
     });
-    setProjectStages((prev) =>
-      prev.map((stage) => {
-        if (stage.stage_id === stage_id) {
-          return {
-            ...stage,
-            tasks: stage.tasks.map((task) => {
-              if (task.task_id === task_id) {
-                return { ...task, ...updatedData };
-              }
-              return task;
-            }),
-          };
-        }
-        return stage;
-      })
+
+    queyrClient.setQueryData(
+      ["project", "personal", "stages"],
+      (prev: ProjectStageInterface[]) =>
+        prev.map((stage) => {
+          if (stage.stage_id === stage_id) {
+            return {
+              ...stage,
+              tasks: stage.tasks.map((task) => {
+                if (task.task_id === task_id) {
+                  return { ...task, ...updatedData };
+                }
+                return task;
+              }),
+            };
+          }
+          return stage;
+        })
     );
     setOnEditMode(false);
   };

@@ -13,6 +13,8 @@ import { GetProjectStagesResponseInterface } from "../../interfaces/api-response
 
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import { TaskDetails } from "@components/project/personal/space/TaskDetails";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export interface TaskDetailsInterface {
   stage_id: string;
@@ -21,10 +23,8 @@ export interface TaskDetailsInterface {
   task_desc: string;
 }
 export const ProjectSpace: FC = () => {
+  const queryClient = useQueryClient();
   const stageInpRef = useRef<HTMLInputElement>(null);
-  const [projectStages, setProjectStages] = useState<ProjectStageInterface[]>(
-    []
-  );
 
   const [taskDetails, setTaskDetails] = useState<TaskDetailsInterface | null>(
     null
@@ -32,27 +32,48 @@ export const ProjectSpace: FC = () => {
   const { project_id } = useParams();
 
   const addProjectStageHandler = async () => {
-    const newStageTitle = stageInpRef.current!.value;
-    await postRequest(`${API_POST_CREATE_PROEJCT_STAGE}/${project_id}`, {
-      stage_title: newStageTitle,
-    });
+    const newStageTitle = stageInpRef.current!.value.trim();
+    if (newStageTitle === "") {
+      toast.error("Stage title can't be empty");
+      return;
+    }
+    const temp_stage_id = Date.now().toString();
     const newStage: ProjectStageInterface = {
-      stage_id: Date.now().toString(),
+      stage_id: temp_stage_id,
       stage_title: newStageTitle,
       tasks: [],
     };
-    setProjectStages((prev) => [...prev, newStage]);
+    queryClient.setQueryData(
+      ["project", "personal", "stages"],
+      (prev: ProjectStageInterface[]) => [...prev, newStage]
+    );
+    const res = await postRequest(
+      `${API_POST_CREATE_PROEJCT_STAGE}/${project_id}`,
+      {
+        stage_title: newStageTitle,
+      }
+    );
+
+    queryClient.setQueryData(
+      ["project", "personal", "stages"],
+      (prev: ProjectStageInterface[]) =>
+        prev.map((stage) => {
+          if (stage.stage_id === temp_stage_id) {
+            return res.data as ProjectStageInterface;
+          }
+          return stage;
+        })
+    );
     stageInpRef.current!.value = "";
   };
 
-  const getProjectStages = async () => {
-    const res = await getRequest(`${API_GET_PROJECT_STAGES}/${project_id}`);
-    setProjectStages(res.data as GetProjectStagesResponseInterface[]);
-  };
-
-  useEffect(() => {
-    getProjectStages();
-  }, []);
+  const { data: projectStages } = useQuery<ProjectStageInterface[]>({
+    queryKey: ["project", "personal", "stages"],
+    queryFn: async () => {
+      const res = await getRequest(`${API_GET_PROJECT_STAGES}/${project_id}`);
+      return res.data as GetProjectStagesResponseInterface[];
+    },
+  });
 
   const dragEndHandler = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -63,19 +84,21 @@ export const ProjectSpace: FC = () => {
         await patchRequest(`task/${source.droppableId}/${draggableId}`, {
           new_position: destination.index,
         });
-        setProjectStages((prev) =>
-          prev.map((stage) => {
-            if (stage.stage_id === source.droppableId) {
-              const currTask = stage.tasks[source.index];
-              stage.tasks.splice(source.index, 1);
-              stage.tasks.splice(destination.index, 0, currTask);
-            }
-            return stage;
-          })
+        queryClient.setQueryData(
+          ["project", "personal", "stages"],
+          (prev: ProjectStageInterface[]) =>
+            prev.map((stage) => {
+              if (stage.stage_id === source.droppableId) {
+                const currTask = stage.tasks[source.index];
+                stage.tasks.splice(source.index, 1);
+                stage.tasks.splice(destination.index, 0, currTask);
+              }
+              return stage;
+            })
         );
       }
     } else {
-      const newProjectStages = [...projectStages];
+      const newProjectStages = [...(projectStages as ProjectStageInterface[])];
       const dragStage = newProjectStages.find(
         (stage) => stage.stage_id === source.droppableId
       );
@@ -93,7 +116,10 @@ export const ProjectSpace: FC = () => {
         new_position: destination.index,
         new_stage_id: destination.droppableId,
       });
-      setProjectStages(newProjectStages);
+      queryClient.setQueryData(
+        ["project", "personal", "stages"],
+        newProjectStages
+      );
     }
   };
 
@@ -105,7 +131,7 @@ export const ProjectSpace: FC = () => {
 
       <DragDropContext onDragEnd={(result) => dragEndHandler(result)}>
         <div className="flex gap-5 px-4 py-6 ">
-          {projectStages.map((stage) => (
+          {projectStages?.map((stage) => (
             <Droppable key={stage.stage_id} droppableId={stage.stage_id}>
               {(provided) => (
                 <ProjectStage
@@ -113,7 +139,7 @@ export const ProjectSpace: FC = () => {
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   {...stage}
-                  setParentState={setProjectStages}
+                  // setParentState={setProjectStages}
                   setTaskDetails={setTaskDetails}
                 />
               )}
@@ -149,7 +175,7 @@ export const ProjectSpace: FC = () => {
       {taskDetails !== null && (
         <TaskDetails
           setTaskDetails={setTaskDetails}
-          setProjectStages={setProjectStages}
+          // setProjectStages={setProjectStages}
           {...taskDetails}
         />
       )}
