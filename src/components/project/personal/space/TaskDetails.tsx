@@ -29,7 +29,6 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
   task_title,
   task_desc,
   setTaskDetails,
-  //   setProjectStages,
 }) => {
   const queyrClient = useQueryClient();
   const [onEditMode, setOnEditMode] = useState(false);
