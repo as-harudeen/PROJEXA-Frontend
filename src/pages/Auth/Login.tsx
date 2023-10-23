@@ -22,7 +22,7 @@ export const Login: FC = () => {
     useZodForm<LoginFormInterface>(loginSchema);
   useAuthErrorLog(errors as AuthErrorsInterface);
   const navigate = useNavigate();
-  const toggleIsLoggin = useUserStore(state => state.toggleIsLoggedIn);
+  const updateUser = useUserStore(state => state.updateUser);
 
   const FormSubmitHandler = async (data: LoginFormInterface) => {
     try {
@@ -30,7 +30,7 @@ export const Login: FC = () => {
       const res = await postRequest(API_POST_LOGIN, data);
       if (res.status === 200) {
         toast.success("Login success");
-        toggleIsLoggin(true);
+        updateUser(res.data as {user_id: string, user_name: string});
         navigate("/personal/project");
       } else {
         toast.success("OTP sent successfully");

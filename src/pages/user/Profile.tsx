@@ -1,4 +1,4 @@
-import { test_img } from "@/assets";
+import { noProfileImg } from "@/assets";
 import { Button } from "@components/custom/Button";
 import { Input } from "@components/custom/Input";
 import { Textarea } from "@nextui-org/react";
@@ -8,13 +8,15 @@ import { useUserProfile } from "@hooks/useEditProfile";
 import { Loading } from "@components/project/Loading";
 
 export interface UpdatedDataStateInterface {
+  user_full_name: string;
   user_name: string;
   user_profile: string;
   summary: string;
 }
 
 export enum BasicInfoFields {
-  name,
+  user_name,
+  full_name,
   gender,
   birthday,
   summary,
@@ -46,6 +48,9 @@ export const Profile: FC = () => {
     userNameOnChangeHandler,
     updateUserNameHandler,
 
+    userFullNameOnChangeHandler,
+    updateUserFullNameHandler,
+
     summaryOnChangeHandler,
     updateSummaryHandler,
   } = useUserProfile();
@@ -74,8 +79,8 @@ export const Profile: FC = () => {
                 avatarState
                   ? URL.createObjectURL(avatarState)
                   : user?.user_profile
-                  ? `http://localhost:3000/${user?.user_profile}`
-                  : test_img
+                  ? `${import.meta.env.VITE_BASE_URL}/${user?.user_profile}`
+                  : noProfileImg
               }`}
               alt=""
             />
@@ -103,9 +108,9 @@ export const Profile: FC = () => {
             </div>
           </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-2xl font-poppins">{user?.user_name || ""}</h2>
-            <span className="text-large font-poppins text-slate-300">
-              {user?.user_email}
+            <h2 className="text-2xl font-poppins">{user?.user_full_name || ""}</h2>
+            <span className="text-large font-poppins text-gray-300">
+              {user?.user_name}
             </span>
           </div>
         </div>
@@ -118,18 +123,18 @@ export const Profile: FC = () => {
             </div>
             <div className="flex flex-col gap-2 border-b py-4">
               <div className="flex justify-between text-xl">
-                <span>Name</span>
-                {editField !== BasicInfoFields.name && (
+                <span>User Name</span>
+                {editField !== BasicInfoFields.user_name && (
                   <span
                     className="cursor-pointer"
-                    onClick={() => setEditField(BasicInfoFields.name)}
+                    onClick={() => setEditField(BasicInfoFields.user_name)}
                   >
                     Edit
                   </span>
                 )}
               </div>
               <div>
-                {editField !== BasicInfoFields.name ? (
+                {editField !== BasicInfoFields.user_name ? (
                   <span className="text-xl">{user?.user_name || ""}</span>
                 ) : (
                   <div className="flex flex-col gap-2">
@@ -140,6 +145,37 @@ export const Profile: FC = () => {
                     <div className="flex gap-2">
                       <Button onClick={updateUserNameHandler}>save</Button>
                       <Button onClick={() => cancelButtonHandler("user_name")}>
+                        cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 border-b py-4">
+              <div className="flex justify-between text-xl">
+                <span>Full Name</span>
+                {editField !== BasicInfoFields.full_name && (
+                  <span
+                    className="cursor-pointer"
+                    onClick={() => setEditField(BasicInfoFields.full_name)}
+                  >
+                    Edit
+                  </span>
+                )}
+              </div>
+              <div>
+                {editField !== BasicInfoFields.full_name ? (
+                  <span className="text-xl">{user?.user_full_name || ""}</span>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      defaultValue={editedDataState.user_full_name}
+                      onChange={userFullNameOnChangeHandler}
+                    />
+                    <div className="flex gap-2">
+                      <Button onClick={updateUserFullNameHandler}>save</Button>
+                      <Button onClick={() => cancelButtonHandler("user_full_name")}>
                         cancel
                       </Button>
                     </div>
