@@ -4,6 +4,7 @@ import { LoginFormInterface, RegisterFormInterface } from "../interfaces/Auth";
 
 export const registerSchema: ZodType<RegisterFormInterface> = z.object({
     user_name: z.string().min(4),
+    user_full_name: z.string().min(4),
     user_email: z.string().email(),
     password: z.string().min(6),
     confirm_password: z.string()

@@ -4,6 +4,6 @@ import { FC } from "react";
 import { Navigate } from "react-router-dom";
 
 export const ProtectedRoute: FC = () => {
-  const isLoggedIn = useUserStore(state => state.isLoggedIn);
+  const isLoggedIn = useUserStore(state => state.user !== null);
   return isLoggedIn ? <ProjectLayout /> : <Navigate to="/auth/login" />;
 };

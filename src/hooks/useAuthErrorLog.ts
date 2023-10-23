@@ -4,11 +4,15 @@ import { toast } from "react-toastify";
 
 export const useAuthErrorLog = (errors: AuthErrorsInterface) => {
   useEffect(() => {
-    if (errors.user_email?.message) {
+    if (errors.user_email) {
       toast.error("Please Enter valid Email.");
     }
     if (errors.user_name) {
-      toast.error("Username should be more than 4 character.");
+      toast.error("Username should be more than 4 characters.");
+    }
+
+    if(errors.user_full_name) {
+      toast.error("Full name should be more than 4 characters.")
     }
 
     if (errors.password) {

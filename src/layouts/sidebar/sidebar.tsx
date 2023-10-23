@@ -9,7 +9,8 @@ import { useUserStore } from "@/store/useUserStore";
 
 export const SideBar: FC = () => {
   const toggleSidebar = useSidebarStore((state) => state.toggle);
-  const toggleLoggedIn = useUserStore((state) => state.toggleIsLoggedIn);
+  const updateUser = useUserStore((state) => state.updateUser);
+  const user_name = useUserStore((state) => state.user?.user_name);
   return (
     <div
       className={`relative z-[999] min-h-screen h-full transition-all duration-300 w-[200px] sm:w-[260px] m-0 lg:block felx flex-col bg-hash_two rounded-s-md sm:rounded-lg`}
@@ -49,15 +50,18 @@ export const SideBar: FC = () => {
               icon={<AiOutlineAppstoreAdd />}
             />
           </SideBarSubItemWrapper>
+          <Link to="/connections">
+            <SideBarItem title="Connections" />
+          </Link>
         </div>
         <div className="flex flex-col">
-          <Link to="/user/profile">
+          <Link to={`/${user_name}`}>
             <SideBarItem title="Profile" icon={<FiUser size="18" />} />
           </Link>
           <Link to="/user/settings">
             <SideBarItem title="Settings" icon={<FiSettings size="18" />} />
           </Link>
-          <button onClick={() => toggleLoggedIn(false)} className="w-full">
+          <button onClick={() => updateUser(null)} className="w-full">
             <SideBarItem title="Logout" icon={<FiLogOut size="18" />} />
           </button>
         </div>

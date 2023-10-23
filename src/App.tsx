@@ -9,8 +9,10 @@ import { ProtectedRoute } from "./utils/ProtectedRoute";
 import { ProjectSpace } from "@pages/Personal-Project/ProjectSpace";
 
 import "./App.css";
-import { Settings } from "@pages/Settings";
-import { Profile } from "@pages/Profile";
+import { Settings } from "@pages/user/Settings";
+import { Profile } from "@pages/user/Profile";
+import { IndividualProfile } from "@pages/user/IndividualProfile";
+import { Connections } from "@pages/user/Connections";
 
 export const App = () => {
   return (
@@ -20,6 +22,8 @@ export const App = () => {
         <Route path="register" element={<Register />} />
       </Route>
       <Route path="/" element={<ProtectedRoute />}>
+        <Route path="/:user_name" element={<IndividualProfile />} />
+        <Route path="/connections" element={<Connections />} />
         <Route path="project">
           <Route path="personal">
             <Route index element={<OverView />} />

@@ -4,7 +4,7 @@ import React, { FC } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const AuthRoute: FC = () => {
-  const isLoggedIn = useUserStore(state => state.isLoggedIn);
+  const isLoggedIn = useUserStore(state => state.user !== null);
   return isLoggedIn ? (
     <Navigate to="/project/personal" />
   ) : (

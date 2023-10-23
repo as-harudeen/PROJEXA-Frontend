@@ -2,16 +2,22 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface UserStore {
-  isLoggedIn: boolean;
-  toggleIsLoggedIn: (loginStatus: boolean) => void;
+  user: {
+    user_name: string;
+    user_id: string;
+  } | null;
+  updateUser: (
+    newUserDetails: { user_name: string; user_id: string } | null
+  ) => void;
 }
 
 export const useUserStore = create<UserStore>()(
   persist(
     (set) => ({
-      isLoggedIn: false,
-      toggleIsLoggedIn: (status: boolean) =>
-        set(() => ({ isLoggedIn: status })),
+      user: null,
+      updateUser: (
+        newUserDetails: { user_name: string; user_id: string } | null
+      ) => set(() => ({ user: newUserDetails })),
     }),
     { name: "user" }
   )

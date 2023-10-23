@@ -3,14 +3,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 
-
-interface UserResponse {
-    user_email: string;
-    user_name: string;
-    user_profile: string;
-    summary?: string;
-    birthday?: string;
-  }
+interface GETMyProfileResponse {
+  user_email: string;
+  user_full_name: string;
+  user_name: string;
+  user_profile: string;
+  summary?: string;
+  birthday?: string;
+}
 
 const useUser = () => {
   const queryClient = useQueryClient();
@@ -18,13 +18,13 @@ const useUser = () => {
   const getUser = useQuery({
     queryKey: ["user", "profile"],
     queryFn: async () => {
-      const res = await getRequest("user");
-      return res.data as UserResponse;
+      const res = await getRequest("user/myprofile");
+      return res.data as GETMyProfileResponse;
     },
   });
 
   const editUserMutation = useMutation({
-    mutationFn: async (updatedData: Partial<UserResponse>) => {
+    mutationFn: async (updatedData: Partial<GETMyProfileResponse>) => {
       const res = await patchRequest("user", updatedData);
       return res.data;
     },
@@ -41,7 +41,6 @@ const useUser = () => {
       toast.error(message);
     },
   });
-
 
   const updateUserProfileMutation = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -61,9 +60,8 @@ const useUser = () => {
     getUser,
 
     editUserMutation,
-    updateUserProfileMutation
-  }
+    updateUserProfileMutation,
+  };
 };
-
 
 export default useUser;

@@ -43,6 +43,11 @@ export const RegisterForm: FC<RegisterFormProps> = ({ setIsRegistered }) => {
           label="Username*"
           placeholder="Enter your username"
         />
+        <AuthInput
+          {...register("user_full_name")}
+          label="Full Name*"
+          placeholder="Enter your full name"
+        />
         <PasswordInput
           {...register("password")}
           label="Password*"

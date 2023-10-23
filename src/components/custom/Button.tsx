@@ -20,6 +20,7 @@ export const Button = extendVariants(NextUIButton, {
   defaultVariants: { 
     color: "hash",
     size: "custom",
+    type: 'button'
   },
   compoundVariants: [
     {
