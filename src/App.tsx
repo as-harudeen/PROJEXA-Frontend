@@ -13,6 +13,8 @@ import { Settings } from "@pages/user/Settings";
 import { Profile } from "@pages/user/Profile";
 import { IndividualProfile } from "@pages/user/IndividualProfile";
 import { Connections } from "@pages/user/Connections";
+import { Following } from "@pages/user/Following";
+import { Followers } from "@pages/user/Followers";
 
 export const App = () => {
   return (
@@ -22,7 +24,10 @@ export const App = () => {
         <Route path="register" element={<Register />} />
       </Route>
       <Route path="/" element={<ProtectedRoute />}>
-        <Route path="/:user_name" element={<IndividualProfile />} />
+        <Route path="/:user_name" element={<IndividualProfile />}>
+          <Route path="following" element={<Following />} />
+          <Route path="followers" element={<Followers />} />
+        </Route>
         <Route path="/connections" element={<Connections />} />
         <Route path="project">
           <Route path="personal">

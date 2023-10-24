@@ -6,7 +6,7 @@ import { FC, useEffect } from "react";
 import { Loading } from "@components/project/Loading";
 import { toast } from "react-toastify";
 import { useUserStore } from "@/store/useUserStore";
-import { Link, useParams } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 import { FiUser } from "react-icons/fi";
 
 type GETUserResponseInterface = {
@@ -111,8 +111,16 @@ export const IndividualProfile: FC = () => {
           </div>
           <div className="flex gap-3 items-center">
             <FiUser />
-            <span>following {userData?.numberOfFollowing}</span>
-            <span>followers {userData?.numberOfFollowers}</span>
+            <Link to={`/${userData?.user_name}/following`}>
+              <span className="hover:text-blue-500">
+                following {userData?.numberOfFollowing}
+              </span>
+            </Link>
+            <Link to={`/${userData?.user_name}/followers`}>
+              <span className="hover:text-blue-500">
+                followers {userData?.numberOfFollowers}
+              </span>
+            </Link>
           </div>
           {userData && (
             <div className="w-full">
@@ -147,7 +155,9 @@ export const IndividualProfile: FC = () => {
           )}
         </div>
       </div>
-      <div className="flex-1 w-[1000px] h-[1200px] bg-dark_hash rounded-xl"></div>
+      <div className="flex-1 w-[1000px] h-[1200px] bg-dark_hash rounded-xl">
+        <Outlet />
+      </div>
     </div>
   );
 };

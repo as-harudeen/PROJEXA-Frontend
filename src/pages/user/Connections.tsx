@@ -19,7 +19,7 @@ interface UserCardProps {
   user_profile?: string;
 }
 
-const UserCard = ({ user_name, user_profile }: UserCardProps) => (
+export const UserCard = ({ user_name, user_profile }: UserCardProps) => (
   <div className="px-4 py-2 flex justify-between items-center w-[300px] h-[80px] bg-hash_two rounded-xl">
     <Link to={`/${user_name}`}>
       <div className="flex-1 flex items-center gap-3">
