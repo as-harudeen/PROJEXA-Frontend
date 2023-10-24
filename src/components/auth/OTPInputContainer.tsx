@@ -2,13 +2,18 @@ import { FC, useEffect, useRef, useState } from "react";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { postRequest } from "../../helper/api.helper";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface OTPInputContainerProps {
-  fetchUrl: string;
+  validateFn: (otp: string) => Promise<void>;
 }
 
 let currOTPIdx = 0;
-export const OTPInputContainer: FC<OTPInputContainerProps> = ({ fetchUrl }) => {
+export const OTPInputContainer: FC<OTPInputContainerProps> = ({
+  validateFn,
+}) => {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [activeOtpIdx, setActiveOtpIdx] = useState(0);
   const otpInput = useRef<HTMLInputElement>(null);
@@ -35,27 +40,34 @@ export const OTPInputContainer: FC<OTPInputContainerProps> = ({ fetchUrl }) => {
     }
   };
 
+  // const validateOTP = async () => {
+  //   try {
+  //     await postRequest(fetchUrl, {
+  //       otp: otp.join(""),
+  //     });
+  //     if(pathname === "/auth/register")
+  //        navigate('/auth/login')
+  //     toast.success("OTP Verified");
+  //   } catch (err) {
+  //     let message = "OPPS Something went wrong";
+  //     if (isAxiosError(err)) {
+  //       if (err.response?.status == 400) {
+  //         message = err.response?.data.message || message;
+  //       } else if (err.response?.status === 401) {
+  //         message = "Plase enter your credential once more";
+  //       }
+  //     }
+  //     toast.error(message);
+  //   } finally {
+  //     setOtp(new Array(6).fill(""));
+  //     setActiveOtpIdx(0);
+  //   }
+  // };
+
   const validateOTP = async () => {
-    try {
-      await postRequest(fetchUrl, {
-        otp: otp.join(""),
-      });
-      toast.success("OTP Verified");
-    } catch (err) {
-      console.log(err);
-      let message = "OPPS Something went wrong";
-      if (isAxiosError(err)) {
-        if (err.response?.status == 400) {
-          message = err.response?.data.message || message;
-        } else if (err.response?.status === 401) {
-          message = "Plase enter your credential once more";
-        }
-      }
-      toast.error(message);
-    } finally {
-      setOtp(new Array(6).fill(""));
-      setActiveOtpIdx(0);
-    }
+    await validateFn(otp.join(""));
+    setOtp(new Array(6).fill(""));
+    setActiveOtpIdx(0);
   };
 
   useEffect(() => {

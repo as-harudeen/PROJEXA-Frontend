@@ -6,14 +6,14 @@ import { Button } from "../custom/Button";
 interface OTPCardProps {
   closeHandler: React.Dispatch<React.SetStateAction<boolean>>;
   resendOTPFn?: () => Promise<void>;
-  validateURL: string;
+  validateFn: (otp: string) => Promise<void>
   isOpen: boolean;
 }
 
 export const OTPCard: FC<OTPCardProps> = ({
   closeHandler,
   resendOTPFn,
-  validateURL,
+  validateFn,
   isOpen,
 }) => {
   const [isLoading, setisLoading] = useState(false);
@@ -41,7 +41,7 @@ export const OTPCard: FC<OTPCardProps> = ({
             Check your email and enter your one-time-password
           </p>
         </div>
-        <OTPInputContainer fetchUrl={validateURL} />
+        <OTPInputContainer validateFn={validateFn} />
         <div
           className={`${styles.flexCenter} flex-col font-poppins text-[15px] underline `}
         >

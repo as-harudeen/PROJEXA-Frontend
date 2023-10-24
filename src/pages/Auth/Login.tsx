@@ -50,6 +50,28 @@ export const Login: FC = () => {
     }
   };
 
+  const OTPValidateFunction = async (otp: string) => {
+    try {
+      console.log("before fetching");
+      const response = await postRequest(API_POST_VALIDATE_2AF, {otp});
+      console.log("after fetching");
+      updateUser(response.data as {user_id: string, user_name: string});
+      navigate("/personal/project");
+      toast.success("OTP Verified");
+    } catch (err) {
+      console.log(err);
+      let message = "OPPS Something went wrong";
+      if (isAxiosError(err)) {
+        if (err.response?.status == 400) {
+          message = err.response?.data.message || message;
+        } else if (err.response?.status === 401) {
+          message = "Plase enter your credential once more";
+        }
+      }
+      toast.error(message);
+    } 
+  }
+
   return (
     <>
       <div
@@ -126,7 +148,7 @@ export const Login: FC = () => {
                 <OTPCard
                   closeHandler={setIsOTPCardOpen}
                   isOpen={isOTPCardOpen}
-                  validateURL={API_POST_VALIDATE_2AF}
+                  validateFn={OTPValidateFunction}
                 />
               </div>
             </div>

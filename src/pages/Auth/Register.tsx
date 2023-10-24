@@ -4,10 +4,35 @@ import { resendRegisterOTPHandler } from "../../helper/auth.helper";
 import { RegisterForm } from "../../components/auth/form/RegisterForm";
 import { OTPCard } from "../../components/auth/OTP-card";
 import { API_POST_VALIDATE_REGISTER_OTP } from "../../constants/api.url";
+import { postRequest } from "@/helper/api.helper";
+import { toast } from "react-toastify";
+import { isAxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const Register: FC = () => {
+  const navigate = useNavigate();
   const [isRegistered, setIsRegisterd] = useState(false);
 
+  const OTPValidateFunction = async (otp: string) => {
+    try {
+      await postRequest(API_POST_VALIDATE_REGISTER_OTP, {
+        otp,
+      });
+
+      navigate('/auth/login')
+      toast.success("OTP Verified");
+    } catch (err) {
+      let message = "OPPS Something went wrong";
+      if (isAxiosError(err)) {
+        if (err.response?.status == 400) {
+          message = err.response?.data.message || message;
+        } else if (err.response?.status === 401) {
+          message = "Plase enter your credential once more";
+        }
+      }
+      toast.error(message);
+    }
+  };
   return (
     <>
       <div
@@ -51,7 +76,7 @@ export const Register: FC = () => {
                   isOpen={isRegistered}
                   closeHandler={setIsRegisterd}
                   resendOTPFn={resendRegisterOTPHandler}
-                  validateURL={API_POST_VALIDATE_REGISTER_OTP}
+                  validateFn={OTPValidateFunction}
                 />
               </div>
             </div>
