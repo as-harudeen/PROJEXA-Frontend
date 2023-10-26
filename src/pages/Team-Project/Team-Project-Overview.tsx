@@ -5,6 +5,9 @@ import { UserCard } from "@pages/user/Connections";
 import { useQuery } from "@tanstack/react-query";
 import { FC } from "react";
 import { Loading } from "@components/project/Loading";
+import { Link } from "react-router-dom";
+import InboxIcon from "@mui/icons-material/Inbox";
+import { InvitationInbox } from "@components/team/InvitationInbox";
 
 interface GETTeamResoponseInterface {
   team_id: string;
@@ -29,13 +32,17 @@ export const TeamProjectOverview: FC = () => {
   return (
     <div className="text-white px-16 py-12">
       {isLoading && <Loading />}
-      <div>
-        <h3 className="font-semibold text-2xl">Team-Project-Overview</h3>
+      <div className="flex justify-between">
+        <h3 className="font-semibold text-2xl mb-5">Team-Project-Overview</h3>
+        <div className="pe-5 cursor-pointer">
+          <InboxIcon />
+          <InvitationInbox />
+        </div>
       </div>
       <div className="flex flex-wrap gap-2 px-8 py-6 w-full h-[900px] bg-hash_one rounded-md">
         {data &&
           data.map((team) => (
-            <div className="flex flex-col justify-between min-h-[400px] bg-hash_dark_two w-auto p-6 rounded-lg">
+            <div className="flex flex-col justify-between h-[400px] max-w-[350px] bg-hash_dark_two p-6 rounded-lg">
               <div>
                 <div className="mr-4 float-left border-3 rounded-lg border-white">
                   <img
@@ -68,7 +75,9 @@ export const TeamProjectOverview: FC = () => {
                   />
                 </div>
                 <div>
-                  <Button className="w-full">Team Details</Button>
+                  <Link to={`/project/team/${team.team_id}`}>
+                    <Button className="w-full">Team Details</Button>
+                  </Link>
                 </div>
               </div>
             </div>
