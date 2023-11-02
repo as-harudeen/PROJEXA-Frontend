@@ -1,5 +1,7 @@
 import { Input } from "@components/custom/Input";
+import { TaskDistributionStage } from "@components/project/team/task-distribution/Task-distribution-stage";
 import { useTeamTaskDistribution } from "@/hooks/project/team-project/useTeamTaskDistribution";
+
 import { FC, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -11,10 +13,8 @@ export const TaskDistributionCenter: FC = () => {
 
   const {
     teamTaskDistributionQuery: { data: stages },
-    addNewTaskDitributionStageMutation,
-
+    addNewTaskDitributionStageMutation
   } = useTeamTaskDistribution({ team_id: team_id!, project_id: project_id! });
-
 
 
   const addStageOnClickHandler = () => {
@@ -56,11 +56,12 @@ export const TaskDistributionCenter: FC = () => {
             <div className="flex gap-3 px-8 py-12 bg-hash_two rounded-md overflow-x-scroll no-scrollbar">
               <div className="flex gap-5 h-full">
                 {stages?.map((stage) => (
-                  <div key={stage.task_distribution_board_stage_id}>
-                    <div>
-                      <span>{stage.task_distribution_board_stage_title}</span>
-                    </div>
-                  </div>
+                  <TaskDistributionStage
+                    key={stage.task_distribution_board_stage_id}
+                    stage_id={stage.task_distribution_board_stage_id}
+                    stage_title={stage.task_distribution_board_stage_title}
+                    tasks={stage.tasks}
+                  />
                 ))}
               <div className="relative h-full  max-w-[300px]">
                 <Input
