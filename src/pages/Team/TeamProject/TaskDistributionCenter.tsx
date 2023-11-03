@@ -6,6 +6,8 @@ import { FC, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { MdAddToPhotos } from "react-icons/md";
+import { TeamMemberTaskPlaceholder } from "@components/project/team/task-distribution/Team-member-task-placeholder";
+import { useTeamUsersTasks } from "@hooks/project/team-project/useTeamUsersTasks";
 
 export const TaskDistributionCenter: FC = () => {
   const { team_id, project_id } = useParams();
@@ -16,6 +18,10 @@ export const TaskDistributionCenter: FC = () => {
     addNewTaskDitributionStageMutation
   } = useTeamTaskDistribution({ team_id: team_id!, project_id: project_id! });
 
+
+  const {
+    teamUsersTasks: { data: users },
+  } = useTeamUsersTasks({ team_id: team_id!, project_id: project_id! });
 
   const addStageOnClickHandler = () => {
     const stageName = stageNameInput.current!.value;
@@ -87,6 +93,22 @@ export const TaskDistributionCenter: FC = () => {
                 />
               </div>
               </div>
+            </div>
+          </div>
+          <div>
+            <div className="mb-3">
+              <h3 className="font-semibold text-xl">Team members</h3>
+            </div>
+            <div className="flex gap-4 px-8 py-12 h-full overflow-x-scroll no-scrollbar bg-hash_two">
+              {users?.map((user) => (
+                <TeamMemberTaskPlaceholder
+                  key={user.user_id}
+                  user_id={user.user_id}
+                  user_name={user.user_name}
+                  user_profile={user.user_profile}
+                  tasks={user.tasks}
+                />
+              ))}
             </div>
           </div>
       </div>
