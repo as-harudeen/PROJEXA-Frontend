@@ -1,13 +1,18 @@
 import { Input } from "@components/custom/Input";
 import { TaskDistributionStage } from "@components/project/team/task-distribution/Task-distribution-stage";
-import { useTeamTaskDistribution } from "@/hooks/project/team-project/useTeamTaskDistribution";
-
+import { TeamMemberTaskPlaceholder } from "@components/project/team/task-distribution/Team-member-task-placeholder";
+import { useTeamTaskDistribution } from "@hooks/project/team-project/useTeamTaskDistribution";
+import {
+  DnDOperation,
+  determineDnDOperation,
+} from "@/utils/task-distribution/projectBoardDnD";
 import { FC, useRef } from "react";
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { MdAddToPhotos } from "react-icons/md";
-import { TeamMemberTaskPlaceholder } from "@components/project/team/task-distribution/Team-member-task-placeholder";
 import { useTeamUsersTasks } from "@hooks/project/team-project/useTeamUsersTasks";
+import { MdAddToPhotos } from "react-icons/md";
+
 
 export const TaskDistributionCenter: FC = () => {
   const { team_id, project_id } = useParams();
@@ -15,14 +20,13 @@ export const TaskDistributionCenter: FC = () => {
 
   const {
     teamTaskDistributionQuery: { data: stages },
-    addNewTaskDitributionStageMutation
+    addNewTaskDitributionStageMutation,
+    changeTaskStageMutation,
   } = useTeamTaskDistribution({ team_id: team_id!, project_id: project_id! });
-
 
   const {
     teamUsersTasks: { data: users },
   } = useTeamUsersTasks({ team_id: team_id!, project_id: project_id! });
-
   const addStageOnClickHandler = () => {
     const stageName = stageNameInput.current!.value;
     if (!stageName) {
@@ -33,6 +37,40 @@ export const TaskDistributionCenter: FC = () => {
     addNewTaskDitributionStageMutation.mutate(stageName);
   };
 
+  const dragEndHandler = async (result: DropResult) => {
+    const { source, destination, draggableId: task_id } = result;
+    if (!destination?.droppableId) {
+      console.log("could not find valid destination");
+      return;
+    }
+    if (source.droppableId === destination.droppableId) {
+      console.log("no changes");
+      return;
+    }
+    console.log(destination.droppableId, source.droppableId);
+    const operationType = determineDnDOperation(
+      source.droppableId,
+      destination.droppableId
+    );
+
+    if (operationType === DnDOperation.StageToStage) {
+      changeTaskStageMutation.mutate({
+        new_stage_id: destination.droppableId,
+        stage_id: source.droppableId,
+        task_id,
+      });
+      ///stage to stage handler
+    } else if (operationType === DnDOperation.StageToUser) {
+
+      /// stage to user operation
+    } else if (operationType === DnDOperation.UserToStage) {
+      // user to stage handler
+
+    } else if (operationType === DnDOperation.UserToUser) {
+      // user to user
+    
+    }
+  };
 
   return (
     <div className="px-16 py-8 text-white font-poppins">
@@ -55,6 +93,7 @@ export const TaskDistributionCenter: FC = () => {
           </div>
         </div>
 
+        <DragDropContext onDragEnd={(result) => dragEndHandler(result)}>
           <div className="flex flex-col gap-3">
             <div>
               <h3 className="text-xl font-semibold">Tasks Board</h3>
@@ -111,6 +150,7 @@ export const TaskDistributionCenter: FC = () => {
               ))}
             </div>
           </div>
+        </DragDropContext>
       </div>
     </div>
   );
