@@ -31,11 +31,17 @@ interface GETTeamUsersTaskResponse extends UserDetails {
 }
 
 
+interface RepositionTaskMutationParam {
+  task_id: string;
+  user_id: string;
+  new_user_id: string;
+}
 
 export const useTeamUsersTasks = ({
   team_id,
   project_id,
 }: TeamUsersTasksParam) => {
+  const queryClient = useQueryClient();
   const QUERY_KEY = ["team", team_id, "project", project_id, "users", "tasks"];
 
   const teamUsersTasks = useQuery({
@@ -48,9 +54,32 @@ export const useTeamUsersTasks = ({
     },
   });
 
+  const addNewTask = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async ({
+      task_details,
+      user_id,
+    }: {
+      task_details: TaskDetails;
+      user_id: string;
+    }) => {
+      queryClient.setQueryData(
+        QUERY_KEY,
+        (prev: GETTeamUsersTaskResponse[]) => {
+          return prev.map((user) => {
+            if (user.user_id === user_id) {
+              return { ...user, tasks: [...user.tasks, task_details] };
+            }
+            return user;
+          });
+        }
+      );
+    },
+  });
 
 
   return {
     teamUsersTasks,
+    addNewTask,
   };
 };

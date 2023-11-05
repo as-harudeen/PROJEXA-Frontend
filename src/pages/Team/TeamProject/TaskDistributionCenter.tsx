@@ -11,6 +11,7 @@ import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useTeamUsersTasks } from "@hooks/project/team-project/useTeamUsersTasks";
+import { patchRequest } from "@/helper/api.helper";
 import { MdAddToPhotos } from "react-icons/md";
 
 
@@ -22,11 +23,14 @@ export const TaskDistributionCenter: FC = () => {
     teamTaskDistributionQuery: { data: stages },
     addNewTaskDitributionStageMutation,
     changeTaskStageMutation,
+    deleteTaskFromStageMutation,
   } = useTeamTaskDistribution({ team_id: team_id!, project_id: project_id! });
 
   const {
     teamUsersTasks: { data: users },
+    addNewTask,
   } = useTeamUsersTasks({ team_id: team_id!, project_id: project_id! });
+  console.log(users);
   const addStageOnClickHandler = () => {
     const stageName = stageNameInput.current!.value;
     if (!stageName) {
@@ -51,24 +55,50 @@ export const TaskDistributionCenter: FC = () => {
     const operationType = determineDnDOperation(
       source.droppableId,
       destination.droppableId
-    );
-
+      );
+      
     if (operationType === DnDOperation.StageToStage) {
+      ///stage to stage handler
       changeTaskStageMutation.mutate({
         new_stage_id: destination.droppableId,
         stage_id: source.droppableId,
         task_id,
       });
-      ///stage to stage handler
     } else if (operationType === DnDOperation.StageToUser) {
-
       /// stage to user operation
+      const user_id = destination.droppableId.split("-")[1];
+      const stage_id = source.droppableId.split("-")[1];
+
+      const currentStage = stages?.find(
+        (stage) => stage.task_distribution_board_stage_id === stage_id
+      );
+      if (!currentStage) {
+        console.log("Could not find stage");
+        return;
+      }
+      const currentTask = currentStage.tasks.find(
+        (task) => task.task_id === task_id
+      );
+      if (!currentTask) {
+        console.log("could not find task");
+        return;
+      }
+
+      deleteTaskFromStageMutation.mutate({ stage_id, task_id });
+      addNewTask.mutate({ task_details: currentTask, user_id });
+
+      await patchRequest(
+        `team/${team_id}/project/${project_id}/task-distribution/task/${task_id}/assign`,
+        { user_id }
+      );
+
     } else if (operationType === DnDOperation.UserToStage) {
       // user to stage handler
 
+
     } else if (operationType === DnDOperation.UserToUser) {
       // user to user
-    
+
     }
   };
 

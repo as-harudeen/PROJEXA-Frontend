@@ -223,11 +223,62 @@ export const useTeamTaskDistribution = ({
     },
   });
 
+  const deleteTaskFromStageMutation = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async ({
+      task_id,
+      stage_id,
+    }: {
+      task_id: string;
+      stage_id: string;
+    }) => {
+      queryClient.setQueryData(
+        QUERY_KEY,
+        (prev: GETTeamTaskDistributionStagesResponse) => {
+          return prev.map((stage) => {
+            if (stage.task_distribution_board_stage_id === stage_id) {
+              return {
+                ...stage,
+                tasks: stage.tasks.filter((task) => task.task_id !== task_id),
+              };
+            }
+            return stage;
+          });
+        }
+      );
+    },
+  });
+
+
+  const relocateTaskMutation = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async ({
+      task_details,
+      stage_id,
+    }: {
+      task_details: TeamTaskInterface;
+      stage_id: string;
+    }) => {
+      queryClient.setQueryData(
+        QUERY_KEY,
+        (prev: GETTeamTaskDistributionStagesResponse) => {
+          return prev.map((stage) => {
+            if (stage.task_distribution_board_stage_id === stage_id) {
+              return { ...stage, tasks: [...stage.tasks, task_details] };
+            }
+            return stage;
+          });
+        }
+      );
+    },
+  });
 
   return {
     teamTaskDistributionQuery,
     addNewTaskDitributionStageMutation,
     addNewTaskDistributionStageTask,
     changeTaskStageMutation,
+    deleteTaskFromStageMutation,
+    relocateTaskMutation
   };
 };

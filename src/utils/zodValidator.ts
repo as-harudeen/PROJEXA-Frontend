@@ -41,3 +41,12 @@ export const projectSchema = z.object({
     message: "End date can't be previous date of start date",
     path: ["endDate"]
 })
+
+
+/**
+ * Team validation schema
+ */
+export const teamSchema = z.object({
+    team_name: z.string().trim().min(4),
+    team_desc: z.string().trim().min(10)
+})
