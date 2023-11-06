@@ -2,11 +2,11 @@ import { getRequest } from "@/helper/api.helper";
 import { useQuery } from "@tanstack/react-query";
 
 interface ProjectInterface {
-  project_id: string;
+  personal_project_id: string;
   project_name: string;
   project_desc: string;
-  project_start_date: string;
-  project_end_date: string;
+  project_start_date: Date;
+  project_end_date: Date;
   project_status: string;
 }
 
