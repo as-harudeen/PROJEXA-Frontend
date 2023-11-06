@@ -31,6 +31,7 @@ export const TaskDistributionCenter: FC = () => {
     teamUsersTasks: { data: users },
     addNewTask,
     deleteTaskFromUserMutation,
+    repositionTaskMutation,
   } = useTeamUsersTasks({ team_id: team_id!, project_id: project_id! });
   console.log(users);
   const addStageOnClickHandler = () => {
@@ -123,6 +124,11 @@ export const TaskDistributionCenter: FC = () => {
       );
     } else if (operationType === DnDOperation.UserToUser) {
       // user to user
+      repositionTaskMutation.mutate({
+        task_id,
+        user_id: source.droppableId,
+        new_user_id: destination.droppableId,
+      });
     }
   };
 

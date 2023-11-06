@@ -104,9 +104,60 @@ export const useTeamUsersTasks = ({
   });
 
 
+  const repositionTaskMutation = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async ({
+      task_id,
+      user_id,
+      new_user_id,
+    }: RepositionTaskMutationParam) => {
+      const user_id_without_prefix = user_id.split("-")[1];
+      const new_user_id_without_prefix = new_user_id.split("-")[1];
+
+      queryClient.setQueryData(
+        QUERY_KEY,
+        (prev: GETTeamUsersTaskResponse[]) => {
+          const currStage = prev.find(
+            (user) =>
+              user.user_id === user_id_without_prefix
+          );
+          if (!currStage) return prev;
+          const currTask = currStage.tasks.find(
+            (task) => task.task_id === task_id
+          );
+          if (!currTask) return prev;
+
+          console.log("Returing updated stage");
+          return prev.map((user) => {
+            if (
+              user.user_id === user_id_without_prefix
+            ) {
+              return {
+                ...user,
+                tasks: user.tasks.filter((task) => task.task_id !== task_id),
+              };
+            } else if (
+              user.user_id ===
+              new_user_id_without_prefix
+            ) {
+              return { ...user, tasks: [...user.tasks, currTask] };
+            }
+            return user;
+          });
+        }
+      );
+
+      await patchRequest(
+        `team/${team_id}/project/${project_id}/task-distribution/reposition/task/${task_id}/user/${user_id_without_prefix}`,
+        { new_user_id: new_user_id_without_prefix }
+      );
+    },
+  });
+
   return {
     teamUsersTasks,
     addNewTask,
     deleteTaskFromUserMutation,
+    repositionTaskMutation
   };
 };
