@@ -24,11 +24,13 @@ export const TaskDistributionCenter: FC = () => {
     addNewTaskDitributionStageMutation,
     changeTaskStageMutation,
     deleteTaskFromStageMutation,
+    relocateTaskMutation,
   } = useTeamTaskDistribution({ team_id: team_id!, project_id: project_id! });
 
   const {
     teamUsersTasks: { data: users },
     addNewTask,
+    deleteTaskFromUserMutation,
   } = useTeamUsersTasks({ team_id: team_id!, project_id: project_id! });
   console.log(users);
   const addStageOnClickHandler = () => {
@@ -95,10 +97,32 @@ export const TaskDistributionCenter: FC = () => {
     } else if (operationType === DnDOperation.UserToStage) {
       // user to stage handler
 
+      const user_id = source.droppableId.split("-")[1];
+      const stage_id = destination.droppableId.split("-")[1];
 
+      const currentUser = users?.find((user) => user.user_id === user_id);
+      if (!currentUser) {
+        console.log("Could not find user");
+        return;
+      }
+
+      const currentTask = currentUser.tasks.find(
+        (task) => task.task_id === task_id
+      );
+      if (!currentTask) {
+        console.log("Could not find task");
+        return;
+      }
+
+      deleteTaskFromUserMutation.mutate({ user_id, task_id });
+      relocateTaskMutation.mutate({ stage_id, task_details: currentTask });
+
+      await patchRequest(
+        `team/${team_id}/project/${project_id}/task-distribution/user/${user_id}/relocate/task/${task_id}`,
+        { stage_id }
+      );
     } else if (operationType === DnDOperation.UserToUser) {
       // user to user
-
     }
   };
 

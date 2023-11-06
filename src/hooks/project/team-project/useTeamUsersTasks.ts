@@ -77,9 +77,36 @@ export const useTeamUsersTasks = ({
     },
   });
 
+  const deleteTaskFromUserMutation = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async ({
+      task_id,
+      user_id,
+    }: {
+      task_id: string;
+      user_id: string;
+    }) => {
+      queryClient.setQueryData(
+        QUERY_KEY,
+        (prev: GETTeamUsersTaskResponse[]) => {
+          return prev.map((user) => {
+            if (user.user_id === user_id) {
+              return {
+                ...user,
+                tasks: user.tasks.filter((task) => task.task_id !== task_id),
+              };
+            }
+            return user;
+          });
+        }
+      );
+    },
+  });
+
 
   return {
     teamUsersTasks,
     addNewTask,
+    deleteTaskFromUserMutation,
   };
 };
