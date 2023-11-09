@@ -26,6 +26,10 @@ export const TeamChat: FC = () => {
 
 
   useEffect(() => {
+    socket.on("team:message:receive", (message: MessageInterface) => {
+      console.log(`team:message:receive`);
+      setMessages((prev) => [...prev, message]);
+    });
 
     socket.on("team:chats", (messages: MessageInterface[]) => {
       console.log(`Team chats`);
@@ -38,7 +42,22 @@ export const TeamChat: FC = () => {
   }, []);
 
 
-
+  const sendButtonClickHandler = () => {
+    const message_text = messageInput.current!.value;
+    if (!message_text) return;
+    const newMessage: MessageInterface = {
+      chat_text: message_text,
+      sended_at: new Date(),
+      chatter: {
+        user_id: user_id!,
+        user_name: "",
+        user_profile: "",
+      },
+    };
+    setMessages((prev) => [...prev, newMessage]);
+    socket.emit("team:message:send", { team_id, message: message_text });
+    messageInput.current!.value = "";
+  };
 
   return (
     <div className="text-white px-16 py-6 flex flex-col justify-between min-h-screen">
@@ -84,7 +103,7 @@ export const TeamChat: FC = () => {
           ref={messageInput}
         />
         <div className="flex flex-col gap-2">
-          <Button className="w-full" >
+          <Button className="w-full" onClick={sendButtonClickHandler}>
             send
           </Button>
         </div>
