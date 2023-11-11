@@ -1,7 +1,7 @@
 import { Button } from "@components/custom/Button";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import moment from "moment";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useUserStore } from "@/store/useUserStore";
 import { Textarea } from "@nextui-org/react";
 import { useSocket } from "@/context/useSocket";
@@ -21,11 +21,22 @@ export const TeamChat: FC = () => {
   const messageInput = useRef<HTMLInputElement>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isSomeoneTyping, setIsSomeoneTyping] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const user_id = useUserStore((state) => state.user?.user_id);
   const { socket } = useSocket();
 
   const [messages, setMessages] = useState<MessageInterface[]>([]);
+
+
+
+  const handleVideoCallInited = useCallback(
+    ({ roomId }: { roomId: string }) => {
+      console.log("handle video call inited");
+      navigate(`video-call/${roomId}`);
+    },
+    []
+  );
 
   const handleTeamChatTyping = useCallback(
     ({ user_name }: { user_name: string }) => {
@@ -38,6 +49,7 @@ export const TeamChat: FC = () => {
     []
   );
 
+
   useEffect(() => {
     socket.on("team:message:receive", (message: MessageInterface) => {
       console.log(message);
@@ -49,9 +61,10 @@ export const TeamChat: FC = () => {
       setMessages(messages);
     });
 
+    socket.on("team:video-call:inited", handleVideoCallInited);
     // socket.on("team:video-call:user-joined", handleVideoCallUserJoined);
     socket.on("team:chat:typing", handleTeamChatTyping);
-  }, [socket]);
+  }, [socket, handleVideoCallInited]);
 
   useEffect(() => {
     socket.emit("team:chat:join", { team_id });
@@ -60,7 +73,7 @@ export const TeamChat: FC = () => {
   const messageInputOnChangeHandler = () => {
     if (messageInput.current!.value) {
       if (!isTyping) setIsTyping(true);
-      socket.emit("team:chat:typing", { team_id });
+      socket.emit("team:chat:typing", {team_id});
     } else {
       if (isTyping) setIsTyping(false);
     }
@@ -83,16 +96,20 @@ export const TeamChat: FC = () => {
     messageInput.current!.value = "";
   };
 
+  const handleVideoCallInit = async () => {
+    socket.emit("team:video-call:init", { team_id });
+  };
+
 
   return (
-    <div className="dark:text-white text-light_mode_text px-16 py-6 flex flex-col justify-between min-h-screen">
+    <div className="text-white px-16 py-6 flex flex-col justify-between min-h-screen">
       <div className="flex-1 flex flex-col gap-3 py-10 h-full">
         <div>
           <h2 className="font-medium text-2xl">Team Chat</h2>
         </div>
         {messages.map((message) => (
           <div
-            className={`font-poppins bg-light_mode_primary dark:bg-dark_hash px-4 py-2 w-[45%] rounded-xl ${
+            className={`font-poppins bg-dark_hash px-4 py-2 w-[45%] rounded-xl ${
               message.chatter.user_id === user_id ? "self-end" : ""
             }`}
           >
@@ -122,21 +139,15 @@ export const TeamChat: FC = () => {
       <div className="flex gap-2 items-center">
         <Textarea
           classNames={{
-            label: ["dark:text-white", "text-light_mode_text"],
             inputWrapper: [
-              "dark:bg-light_hash",
-              "bg-light_mode_secondary",
-              "dark:data-[hover=true]:bg-hash_two",
-              "data-[hover=true]:bg-light_mode_tertiary",
-              "dark:group-data-[focus=true]:bg-hash_two",
-              "group-data-[focus=true]:bg-light_mode_tertiary",
+              "bg-opacity-30",
+              "bg-light_hash",
+              "group-data-[focus=true]:bg-opacity-20",
+              "group-data-[hover=true]:bg-opacity-30",
+              "pe-14",
             ],
-            innerWrapper: ["focus-within:bg-red-500"],
-            input: ["text-medium", "font-poppins"],
-          }}  
-  
-          onKeyUp={(e) => {
-            if (e.key === "Enter") sendButtonClickHandler();
+            label: ["font-[500]", "font-poppins"],
+            input: ["text-white", "text-lg", "font-poppins"],
           }}
           ref={messageInput}
           onChange={messageInputOnChangeHandler}
@@ -145,9 +156,12 @@ export const TeamChat: FC = () => {
           <Button className="w-full" onClick={sendButtonClickHandler}>
             send
           </Button>
+          <Button className="w-full" onClick={handleVideoCallInit}>
+            Video call
+          </Button>
         </div>
       </div>
-     
+
     </div>
   );
 };
