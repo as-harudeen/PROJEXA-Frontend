@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUserStore } from "@/store/useUserStore";
 import { Textarea } from "@nextui-org/react";
 import { useSocket } from "@/context/useSocket";
+import { noProfileImg } from "@/assets";
 
 interface MessageInterface {
   chat_text: string;
@@ -14,6 +15,14 @@ interface MessageInterface {
     user_name: string;
     user_profile: string;
   };
+}
+
+interface TeamVideoCallJoinDetails {
+  from: {
+    user_name: string;
+    user_profile: string;
+  };
+  roomId: string;
 }
 
 export const TeamChat: FC = () => {
@@ -26,9 +35,16 @@ export const TeamChat: FC = () => {
   const user_id = useUserStore((state) => state.user?.user_id);
   const { socket } = useSocket();
 
+  const [joinDetails, setJoinDetails] =
+    useState<TeamVideoCallJoinDetails | null>(null);
   const [messages, setMessages] = useState<MessageInterface[]>([]);
 
-
+  const handleVideoCallStarted = useCallback(
+    (joinDetails: TeamVideoCallJoinDetails) => {
+      setJoinDetails(joinDetails);
+    },
+    []
+  );
 
   const handleVideoCallInited = useCallback(
     ({ roomId }: { roomId: string }) => {
@@ -61,10 +77,11 @@ export const TeamChat: FC = () => {
       setMessages(messages);
     });
 
+    socket.on("team:video-call:started", handleVideoCallStarted);
     socket.on("team:video-call:inited", handleVideoCallInited);
     // socket.on("team:video-call:user-joined", handleVideoCallUserJoined);
     socket.on("team:chat:typing", handleTeamChatTyping);
-  }, [socket, handleVideoCallInited]);
+  }, [socket, handleVideoCallStarted, handleVideoCallInited]);
 
   useEffect(() => {
     socket.emit("team:chat:join", { team_id });
@@ -100,6 +117,9 @@ export const TeamChat: FC = () => {
     socket.emit("team:video-call:init", { team_id });
   };
 
+  const handleVideoCallJoin = async () => {
+    navigate(`video-call/${joinDetails?.roomId}`);
+  };
 
   return (
     <div className="text-white px-16 py-6 flex flex-col justify-between min-h-screen">
@@ -161,7 +181,34 @@ export const TeamChat: FC = () => {
           </Button>
         </div>
       </div>
-
+      {joinDetails && (
+        <div className="fixed flex gap-5 items-center justify-between bottom-3 right-10 px-6 py-3 bg-light_hash rounded-md">
+          <div>
+            <div>
+              <img
+                src={
+                  joinDetails.from.user_profile
+                    ? `${import.meta.env.VITE_BASE_URL}/${
+                        joinDetails.from.user_profile
+                      }`
+                    : noProfileImg
+                }
+                className="w-[50px] h-[50px] object-cover rounded-full"
+                alt=""
+              />
+            </div>
+            <span className="font-medium font-poppins">
+              {joinDetails.from.user_name} Initiated Video Call
+            </span>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Button onClick={handleVideoCallJoin}>Join</Button>
+            <Button color="danger" onClick={() => setJoinDetails(null)}>
+              Close
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
