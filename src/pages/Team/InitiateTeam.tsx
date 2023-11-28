@@ -45,7 +45,7 @@ export const InitiateTeam: FC = () => {
     formData.append("team_name", team_name);
     formData.append("team_desc", team_desc);
     formData.append("team_dp", teamDp || "");
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/team`, {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}team`, {
       method: "POST",
       body: formData,
       credentials: "include"
@@ -66,11 +66,11 @@ export const InitiateTeam: FC = () => {
   }, [errors.team_name, errors.team_desc]);
 
   return (
-    <div className="text-white px-16 py-12 font-poppins">
+    <div className="text-light_mode_text dark:text-white px-16 py-12 font-poppins">
       <div className="mb-10">
         <h2 className="font-semibold text-2xl">Initiate Team</h2>
       </div>
-      <div className="w-full h-[900px] bg-dark_hash">
+      <div className="w-full bg-light_mode_primary dark:bg-dark_hash">
         <form onSubmit={handleSubmit(formSubmitHandler)}>
           <div className="flex gap-5 p-6">
             <div className="relative">
@@ -103,22 +103,7 @@ export const InitiateTeam: FC = () => {
                   labelPlacement="outside"
                   label="Team Name"
                   placeholder="Enter team name"
-                  classNames={{
-                    label: [
-                      "text-white",
-                      "text-lg",
-                      "font-bold",
-                      "font-nunito",
-                    ],
-                    inputWrapper: [
-                      "bg-hash_one",
-                      "border-hash_one",
-                      "data-[hover=true]:bg-transperent",
-                      "group-data-[focus=true]:bg-hash_one",
-                      "rounded-md",
-                    ],
-                    input: ["text-white", "text-md"],
-                  }}
+                  color="hash"
                 />
               </div>
               <div className="">
@@ -129,20 +114,17 @@ export const InitiateTeam: FC = () => {
                   label="Team Description"
                   placeholder="Enter team description"
                   classNames={{
-                    label: [
-                      "text-white",
-                      "text-lg",
-                      "font-bold",
-                      "font-nunito",
-                    ],
+                    label: ["dark:text-white", "text-light_mode_text"],
                     inputWrapper: [
-                      "bg-hash_one",
-                      "border-hash_one",
-                      "data-[hover=true]:bg-transperent",
-                      "group-data-[focus=true]:bg-hash_one",
-                      "rounded-md",
+                      "dark:bg-light_hash",
+                      "bg-light_mode_secondary",
+                      "dark:data-[hover=true]:bg-hash_two",
+                      "data-[hover=true]:bg-light_mode_tertiary",
+                      "dark:group-data-[focus=true]:bg-hash_two",
+                      "group-data-[focus=true]:bg-light_mode_tertiary",
                     ],
-                    input: ["text-white", "text-md"],
+                    innerWrapper: ["focus-within:bg-red-500"],
+                    input: ["text-medium", "font-poppins"],
                   }}
                 />
               </div>

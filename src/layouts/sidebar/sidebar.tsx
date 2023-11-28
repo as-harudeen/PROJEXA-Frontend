@@ -2,6 +2,7 @@ import { FC } from "react";
 import { FiLogOut, FiSettings, FiUser } from "react-icons/fi";
 import { AiOutlineAppstoreAdd } from "react-icons/ai";
 import { MdMenuOpen } from "react-icons/md";
+import { TbUsersPlus } from "react-icons/tb";
 import "./sidebar.css";
 import { Link, useLocation } from "react-router-dom";
 import { useSidebarStore } from "@/store/useSidebarStore";
@@ -13,17 +14,19 @@ export const SideBar: FC = () => {
   const user_name = useUserStore((state) => state.user?.user_name);
   return (
     <div
-      className={`relative z-[999] min-h-screen h-full transition-all duration-300 w-[200px] sm:w-[260px] m-0 lg:block felx flex-col bg-hash_two rounded-s-md sm:rounded-lg`}
+      className={`min-h-screen h-full transition-all duration-300 w-[200px] sm:w-[260px] m-0 lg:block felx flex-col text-light_mode_text dark:text-white bg-light_mode_hard dark:bg-hash_two rounded-s-md sm:rounded-lg`}
     >
       <MdMenuOpen
         onClick={() => toggleSidebar(false)}
-        className="text-white absolute top-[50%] right-[-12px] translate-y-[-50%] cursor-pointer rotate-90"
+        className=" absolute top-[50%] right-[-12px] translate-y-[-50%] cursor-pointer rotate-90"
         size="28"
       />
-      <div className="flex-1 h-full flex flex-col justify-between sm:gap-2 px-[10px] sm:px-[16px] sm:py-[12px]">
-        <h1 className="text-white font-semibold font-poppins text-center text-xl sm:text-2xl my-2 sm:my-5">
-          PROJEXA
-        </h1>
+      <div className="flex-1 h-full flex flex-col justify-between gap-2 px-[10px] sm:px-[16px] sm:py-[12px]">
+        <Link to="/">
+          <h1 className="cursor-pointer font-semibold font-poppins text-center text-xl sm:text-2xl my-2 sm:my-5">
+            PROJEXA
+          </h1>
+        </Link>
         <div className="flex-1 flex flex-col w-full">
           <Link to="/project/personal">
             <SideBarItem title="Personal Project" />
@@ -36,20 +39,21 @@ export const SideBar: FC = () => {
               />
             </Link>
           </SideBarSubItemWrapper>
-          <SideBarItem title="Team Project" />
-          <SideBarSubItemWrapper indexPath="/project/team">
-            <SideBarSubItem
-              title="New Project"
-              icon={<AiOutlineAppstoreAdd />}
-            />
+          <Link to="/team">
+            <SideBarItem title="Team" />
+          </Link>
+          <SideBarSubItemWrapper indexPath="/team">
+            <Link to="/team/initiate-team">
+              <SideBarSubItem title="Initiate Team" icon={<TbUsersPlus />} />
+            </Link>
           </SideBarSubItemWrapper>
-          <SideBarItem title="Company Project" />
+          {/* <SideBarItem title="Company Project" />
           <SideBarSubItemWrapper indexPath="/project/company">
             <SideBarSubItem
               title="New Project"
               icon={<AiOutlineAppstoreAdd />}
             />
-          </SideBarSubItemWrapper>
+          </SideBarSubItemWrapper> */}
           <Link to="/connections">
             <SideBarItem title="Connections" />
           </Link>

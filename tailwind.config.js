@@ -14,7 +14,13 @@ module.exports = {
         hash_one: "#4B4B4B",
         dark_hash: "#292929",
         hash_two: "#242424",
-        hash_dark_two: "#0A0A0A"
+        hash_dark_two: "#0A0A0A",
+        light_mode_primary: '#FFE1A8',
+        light_mode_secondary: '#FFEAC2',
+        light_mode_text: '#F7FFF7',
+        light_mode_tertiary: '#FFF4E0',
+        light_mode_hard: '#FFD382',
+        light_mode_text: '#4D4D4D',
       },
       fontFamily: {
         poppins: ["Poppins", "sans-serif"],

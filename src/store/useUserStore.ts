@@ -1,13 +1,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+interface User {
+  user_name: string;
+  user_id: string;
+  isTwoFacAuthEnabled: boolean;
+}
+
 interface UserStore {
-  user: {
-    user_name: string;
-    user_id: string;
-  } | null;
+  user: User| null;
   updateUser: (
-    newUserDetails: { user_name: string; user_id: string } | null
+    newUserDetails: User | null
   ) => void;
 }
 
@@ -16,7 +19,7 @@ export const useUserStore = create<UserStore>()(
     (set) => ({
       user: null,
       updateUser: (
-        newUserDetails: { user_name: string; user_id: string } | null
+        newUserDetails: User | null
       ) => set(() => ({ user: newUserDetails })),
     }),
     { name: "user" }

@@ -1,4 +1,4 @@
-import { getRequest, patchRequest } from "@/helper/api.helper";
+import { useFetch } from "@hooks/useFetch";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface TeamUsersTasksParam {
@@ -12,12 +12,20 @@ interface UserDetails {
   user_profile: string;
 }
 
-interface TaskDetails {
+export interface TaskDetails {
   task_id: string;
   task_title: string;
-  task_priority: string;
-  task_status: string;
+  task_priority: number;
+  task_status: 'todo' | 'doing' | 'done';
   task_desc: string;
+  task_time_cap: string;
+  task_comments: {
+    task_comment_text: string;
+    commented_at: Date;
+    commented_by: {
+      user_name: string;
+    }
+  }[];
 }
 
 enum TeamRole {
@@ -43,14 +51,15 @@ export const useTeamUsersTasks = ({
 }: TeamUsersTasksParam) => {
   const queryClient = useQueryClient();
   const QUERY_KEY = ["team", team_id, "project", project_id, "users", "tasks"];
+  const { getRequest, patchRequest } = useFetch();
 
   const teamUsersTasks = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
       const response = await getRequest(
-        `team/${team_id}/project/${project_id}/task-distribution/users/tasks`
+        `team/task-distribution/team/${team_id}/users/tasks`
       );
-      return response.data as GETTeamUsersTaskResponse[];
+      return (await response.json()) as GETTeamUsersTaskResponse[];
     },
   });
 
@@ -148,7 +157,7 @@ export const useTeamUsersTasks = ({
       );
 
       await patchRequest(
-        `team/${team_id}/project/${project_id}/task-distribution/reposition/task/${task_id}/user/${user_id_without_prefix}`,
+        `team/task-distribution/reposition/task/${task_id}/user/${user_id_without_prefix}`,
         { new_user_id: new_user_id_without_prefix }
       );
     },

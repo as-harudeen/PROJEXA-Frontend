@@ -11,17 +11,18 @@ export const ProjectLayout: FC = () => {
     <>
       {!isSideBarOpen && <NavBar />}
 
-      <div className={`${styles.flexCenter}`}>
+      <div className={`${styles.flexCenter} bg-light_mode_secondary dark:bg-hash_dark_two`}>
         <div className={`flex ${styles.boxWidth} gap-5 sm:px-16 px-2 sm:py-10 `}>
           <div
             className={`${
               isSideBarOpen ? "scale-100" : "hidden"
-            } absolute sm:relative transition-transform delay-50 origin-top-left duration-1000 ease-out`}
+            } fixed sm:relative transition-transform delay-50 origin-top-left duration-1000 ease-out left-0
+            z-[9999999]`}
           >
             <SideBar />
           </div>
           <main
-            className={`flex-1 mx-auto py-4 bg-hash_dark_two border-[1px] rounded-md min-h-screen h-full`}
+            className={`flex-1 mx-auto py-4 bg-light_mode_tertiary dark:bg-hash_dark_two border-[1px] w-full rounded-md min-h-screen h-full`}
           >
             <Outlet />
           </main>

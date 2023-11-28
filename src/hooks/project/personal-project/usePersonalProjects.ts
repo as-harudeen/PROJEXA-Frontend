@@ -1,4 +1,4 @@
-import { getRequest } from "@/helper/api.helper";
+import { useFetch } from "@hooks/useFetch";
 import { useQuery } from "@tanstack/react-query";
 
 interface ProjectInterface {
@@ -16,11 +16,12 @@ export const usePersonalProjects = (
   selectedKeys: Set<string>
 ) => {
   const QUERY_KEY = ["personal", "projects"];
+  const { getRequest } = useFetch();
 
   const personalProjectsQuery = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
-      let url = `/project/personal?p=${currPage}&`;
+      let url = `project/personal?p=${currPage}&`;
 
       if (searchValue) url += `s=${searchValue}&`;
 
@@ -33,7 +34,7 @@ export const usePersonalProjects = (
       }
 
       const response = await getRequest(url);
-      return response.data as ProjectInterface[];
+      return (await response.json()) as ProjectInterface[];
     },
   });
 

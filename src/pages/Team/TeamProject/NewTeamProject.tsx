@@ -1,12 +1,13 @@
 import { NewProject } from "@pages/Personal-Project/NewProject";
 import { FC } from "react";
-import { CreateProjectDataInterface } from "@/interfaces/project/personal/newProject.interface";
-import { postRequest } from "@/helper/api.helper"
+import { CreateProjectDataInterface } from "@/interfaces/project";
 import { useParams } from "react-router-dom";
+import { useFetch } from "@hooks/useFetch";
 
 export const NewTeamProject: FC = () => {
 
     const { team_id } = useParams();
+    const {postRequest} = useFetch();
 
   const createTeamProjectHandler = async (
     data: CreateProjectDataInterface

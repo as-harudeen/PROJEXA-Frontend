@@ -7,12 +7,12 @@ import path from "node:path";
 export default defineConfig({
   resolve: {
     alias: {
-      "@components": path.resolve(__dirname, "src/components"),
-      "@helper": path.resolve(__dirname, "src/helper"),
-      "@pages": path.resolve(__dirname, "src/pages"),
-      "@hooks": path.resolve(__dirname, "src/hooks"),
-      "@interfaces": path.resolve(__dirname, "src/interfaces"),
-      "@utils": path.resolve(__dirname, "src/utils"),
+      "@components": path.resolve(__dirname, "./src/components"),
+      "@helper": path.resolve(__dirname, "./src/helper"),
+      "@pages": path.resolve(__dirname, "./src/pages"),
+      "@hooks": path.resolve(__dirname, "./src/hooks"),
+      "@interfaces": path.resolve(__dirname, "./src/interfaces"),
+      "@utils": path.resolve(__dirname, "./src/utils"),
       "@": path.resolve(__dirname, "./src")
     }
   },

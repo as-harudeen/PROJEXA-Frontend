@@ -145,7 +145,7 @@ export const useTeamTaskDistribution = ({
       );
 
       const response = await postRequest(
-        `team/task-distribution/${project_id}/stage/${stage_id}/task`,
+        `team/task-distribution/stage/${stage_id}/task`,
         {
           task_title,
           task_priority,

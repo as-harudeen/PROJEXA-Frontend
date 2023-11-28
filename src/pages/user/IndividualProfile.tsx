@@ -1,13 +1,13 @@
 import { noProfileImg } from "@/assets";
 import { Button } from "@components/custom/Button";
-import { getRequest, postRequest } from "@/helper/api.helper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FC, useEffect } from "react";
 import { Loading } from "@components/project/Loading";
 import { toast } from "react-toastify";
 import { useUserStore } from "@/store/useUserStore";
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { FiUser } from "react-icons/fi";
+import { useFetch } from "@hooks/useFetch";
 
 type GETUserResponseInterface = {
   user_id: string;
@@ -21,6 +21,7 @@ type GETUserResponseInterface = {
 } | null;
 
 export const IndividualProfile: FC = () => {
+  const { getRequest, postRequest } = useFetch();
   const queryClient = useQueryClient();
   const { user_name } = useParams();
   const loggedUserId = useUserStore((state) => state.user?.user_id);
@@ -33,9 +34,11 @@ export const IndividualProfile: FC = () => {
     queryKey: ["user", "profile", `{user_name: ${user_name}}`],
     queryFn: async () => {
       const response = await getRequest(`user/${user_name}`);
-      return response.data as GETUserResponseInterface;
+      return (await response.json()) as GETUserResponseInterface;
     },
   });
+
+  const navigate = useNavigate();
 
   const followMutation = useMutation({
     mutationFn: async () => {
@@ -83,7 +86,7 @@ export const IndividualProfile: FC = () => {
   }, [isError]);
 
   return (
-    <div className="text-white font-poppins flex gap-8 px-16 py-12">
+    <div className="dark:text-white text-light_mode_text font-poppins flex gap-8 px-16 py-12">
       {isLoading && <Loading />}
       <div className="flex flex-col gap-3 max-w-[250px]">
         <div>
@@ -125,11 +128,12 @@ export const IndividualProfile: FC = () => {
           {userData && (
             <div className="w-full">
               {userData.user_id === loggedUserId ? (
-                <Link to="/user/profile">
-                  <Button type="button" className="w-full">
-                    Edit profile
-                  </Button>
-                </Link>
+                <Button
+                  onClick={() => navigate("/user/profile")}
+                  className="w-full"
+                >
+                  Edit profile
+                </Button>
               ) : (
                 <>
                   {userData.isCurrentUserFollowing ? (
@@ -155,7 +159,7 @@ export const IndividualProfile: FC = () => {
           )}
         </div>
       </div>
-      <div className="flex-1 w-[1000px] h-[1200px] bg-dark_hash rounded-xl">
+      <div className="flex-1 w-[1000px] h-[1200px] dark:text-white text-light_mode_text bg-light_mode_primary dark:bg-dark_hash rounded-xl">
         <Outlet />
       </div>
     </div>

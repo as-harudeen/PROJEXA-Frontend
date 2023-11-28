@@ -26,7 +26,7 @@ export const OTPCard: FC<OTPCardProps> = ({
 
   return (
     <div
-      className={`bg-light_hash h-[400px] top-[50%] sm:top-0 translate-y-[-50%] sm:translate-y-0 sm:h-[80%] sm:w-[80%] rounded-lg absolute sm:relative ${
+      className={`bg-light_mode_primary dark:bg-light_hash h-[400px] top-[50%] sm:top-0 translate-y-[-50%] sm:translate-y-0 sm:h-[80%] sm:w-[80%] rounded-lg absolute sm:relative ${
         isOpen ? "scale-100" : "scale-0"
       } transition-transform duration-300`}
     >

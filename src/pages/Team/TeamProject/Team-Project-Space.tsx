@@ -43,14 +43,14 @@ export const TeamProjectSpace: FC = () => {
   };
 
   return (
-    <div className="px-16 py-8 text-white ">
-      <div>
+    <div className="px-16 py-8 dark:text-white ">
+      <div className="mb-10">
         <h2 className="font-semibold text-xl">Team-Project-Space</h2>
       </div>
-      <div className="flex gap-5 pt-10">
+      <div className="flex md:justify-center gap-5 px-12 py-8 bg-light_mode_primary dark:bg-hash_two overflow-x-scroll no-scrollbar shadow-xl">
         <DragDropContext onDragEnd={dragEndHandler}>
-          <div className="border-1 h-[400px] w-[250px] rounded-lg">
-            <div className="flex justify-center py-2 border-b-1">
+          <div className="border-1 border-light_mode_text dark:border-white h-[400px] bg-light_mode_secondary dark:bg-hash_one overflow-y-scroll no-scrollbar min-w-[200px] w-[250px] rounded-lg">
+            <div className="flex justify-center py-2 border-b-1 border-light_mode_text">
               <span className="font-medium text-large">Todo</span>
             </div>
             <Droppable droppableId="todo">
@@ -71,7 +71,7 @@ export const TeamProjectSpace: FC = () => {
                           {...provider.draggableProps}
                           {...provider.dragHandleProps}
                           ref={provider.innerRef}
-                          className="border-1 p-3 rounded-lg flex justify-between break-all"
+                          className="border-1 border-light_mode_text dark:border-white bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
                         >
                           <TaskCard taskDetails={task} />
                         </div>
@@ -83,8 +83,8 @@ export const TeamProjectSpace: FC = () => {
               )}
             </Droppable>
           </div>
-          <div className="border-1 h-[400px] w-[250px] rounded-lg">
-            <div className="flex justify-center py-2 border-b-1">
+          <div className="border-1 border-light_mode_text dark:border-white bg-light_mode_secondary dark:bg-hash_one h-[400px] min-w-[200px] w-[250px] rounded-lg">
+            <div className="flex justify-center py-2 border-b-1 border-light_mode_text">
               <span className="font-medium text-large">Doing</span>
             </div>
             <Droppable droppableId="doing">
@@ -105,7 +105,7 @@ export const TeamProjectSpace: FC = () => {
                           {...provider.draggableProps}
                           {...provider.dragHandleProps}
                           ref={provider.innerRef}
-                          className="border-1 p-3 rounded-lg flex justify-between break-all"
+                          className="border-1 border-light_mode_text dark:border-white bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
                         >
                           <TaskCard taskDetails={task} />
                         </div>
@@ -117,8 +117,8 @@ export const TeamProjectSpace: FC = () => {
               )}
             </Droppable>
           </div>
-          <div className="border-1 h-[400px] w-[250px] rounded-lg">
-            <div className="flex justify-center py-2 border-b-1">
+          <div className="border-1 border-light_mode_text dark:border-white h-[400px] bg-light_mode_secondary dark:bg-hash_one min-w-[200px] w-[250px] rounded-lg">
+            <div className="flex justify-center py-2 border-b-1 border-light_mode_text">
               <span className="font-medium text-large">Done</span>
             </div>
             <Droppable droppableId="done">
@@ -139,7 +139,7 @@ export const TeamProjectSpace: FC = () => {
                           {...provider.draggableProps}
                           {...provider.dragHandleProps}
                           ref={provider.innerRef}
-                          className="border-1 p-3 rounded-lg flex justify-between break-all"
+                          className="border-1 border-light_mode_text dark:border-white bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
                         >
                           <TaskCard taskDetails={task} />
                         </div>

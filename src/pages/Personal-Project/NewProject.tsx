@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
 import {
-  Button,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -13,16 +12,21 @@ import { useZodForm } from "../../hooks/useZodForm";
 import { projectSchema } from "../../utils/zodValidator";
 import { toast } from "react-toastify";
 import {
-  PersonalNewProjectProps,
+  CreateProjectDataInterface,
   ProjectFormInterface,
   ProjectReferencesInterface,
-} from "../../interfaces/project/personal/newProject.interface";
+} from "../../interfaces/project";
 import { ProjectReferenceForm } from "../../components/project/ProjectReferenceForm";
-import { isAxiosError } from "axios";
-import { postRequest } from "../../helper/api.helper";
-import { API_POST_CREATE_NEW_PERSONAL_PROJECT } from "@/constants/api.url";
+import { Button } from "@components/custom/Button";
 
-export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
+
+interface NewProjectProps {
+  createProjectHandler: (
+    data: CreateProjectDataInterface
+  ) => Promise<void>;
+}
+
+export const NewProject: FC<NewProjectProps> = ({ createProjectHandler }) => {
   const [projectReferences, setProjectReferences] = useState<
     ProjectReferencesInterface[]
   >([]);
@@ -36,7 +40,6 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
   } = useZodForm<ProjectFormInterface>(projectSchema);
 
   useEffect(() => {
-    console.log(err);
     if (err.project_name?.message) toast.error(err.project_name?.message);
     if (err.project_desc?.message) toast.error(err.project_desc?.message);
     if (err.project_start_date?.message)
@@ -46,33 +49,22 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
   }, [err]);
 
   const submitHandler = async (data: ProjectFormInterface) => {
-    try {
-      await postRequest(API_POST_CREATE_NEW_PERSONAL_PROJECT, {
-        ...data,
-        project_reference: projectReferences,
-      });
-      toast.success("Project Created Successfully");
 
+      createProjectHandler({...data, project_reference: projectReferences})
+
+      toast.success("Project Created Successfully");
       reset();
       setProjectReferences([]);
-    } catch (err) {
-      let message = "OPPS Something wrong";
-      if (isAxiosError(err)) {
-        if (err.response?.status === 401) message = "Authentication failed";
-        else message = err.response?.data.message || message;
-      }
 
-      toast.error(message);
-    }
   };
 
   return (
-    <div className="md:px-16 px-6 md:py-8 py-4 text-white rounded-xl">
+    <div className="md:px-16 px-6 md:py-8 py-4 text-light_mode_text dark:text-white rounded-xl">
       <h1 className="font-poppins sm:text-xl text-lg md:mb-6 mb-3 font-semibold">
         New Project
       </h1>
       <div className="flex flex-col gap-6 w-full">
-        <div className="flex-1 md:px-8 px-3 md:py-6 py-3 bg-hash_one rounded-lg ">
+        <div className="flex-1 md:px-8 px-3 md:py-6 py-3 shadow-lg bg-light_mode_secondary dark:bg-hash_one rounded-lg ">
           <h3 className="font-poppins font-medium sm:text-lg mb-3">
             Project Reference
           </h3>
@@ -129,7 +121,7 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
             setEditIdx={setEditIdx}
           />
         </div>
-        <div className="flex-1 bg-hash_one rounded-lg md:px-8 px-3 md:py-6 py-3">
+        <div className="flex-1 bg-light_mode_secondary shadow-lg dark:bg-hash_one rounded-lg md:px-8 px-3 md:py-6 py-3">
           <form onSubmit={handle(submitHandler)}>
             <div className="flex flex-col gap-4">
               <h3 className="font-poppins font-medium md:text-lg mb-3">
@@ -148,7 +140,14 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
                   color="secondary"
                   classNames={{
                     input: [
-                      "placeholder:text-white placeholder:text-opacity-60",
+                      "dark:placeholder:text-white placeholder:text-opacity-60",
+                    ],
+                    label: ["dark:text-white", "text-light_mode_text"],
+                    inputWrapper: [
+                      "bg-light_mode_tertiary",
+                      "dark:bg-transparent",
+                      "border",
+                      "border-light_mode_text",
                     ],
                   }}
                 />
@@ -167,7 +166,14 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
                   color="secondary"
                   classNames={{
                     input: [
-                      "placeholder:text-white placeholder:text-opacity-60",
+                      "dark:placeholder:text-white placeholder:text-opacity-60",
+                    ],
+                    label: ["dark:text-white", "text-light_mode_text"],
+                    inputWrapper: [
+                      "bg-light_mode_tertiary",
+                      "dark:bg-transparent",
+                      "border",
+                      "border-light_mode_text",
                     ],
                   }}
                 />
@@ -182,10 +188,16 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
                   labelPlacement="outside"
                   name="project_end_date"
                   color="secondary"
-                  onChange={(e) => console.log(e.currentTarget.value)}
                   classNames={{
                     input: [
-                      "placeholder:text-white placeholder:text-opacity-60",
+                      "dark:placeholder:text-white placeholder:text-opacity-60",
+                    ],
+                    label: ["dark:text-white", "text-light_mode_text"],
+                    inputWrapper: [
+                      "bg-light_mode_tertiary",
+                      "dark:bg-transparent",
+                      "border",
+                      "border-light_mode_text",
                     ],
                   }}
                 />
@@ -202,15 +214,21 @@ export const NewProject: FC<PersonalNewProjectProps | {}> = () => {
                   name="project_desc"
                   classNames={{
                     input: [
-                      "placeholder:text-white placeholder:text-opacity-60",
+                      "dark:placeholder:text-white placeholder:text-opacity-60",
                     ],
+                    label: [
+                      "dark:text-white", "text-light_mode_text"
+                    ],
+                    inputWrapper: [
+                      "bg-light_mode_tertiary",
+                      "dark:bg-transparent",
+                      "border", "border-light_mode_text"
+                    ]
                   }}
                 />
               </div>
               <Button
                 type="submit"
-                className="text-white bg-hash_two hover:bg-light_hash mb-4"
-                variant="bordered"
               >
                 Add project
               </Button>

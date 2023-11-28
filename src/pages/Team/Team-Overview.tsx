@@ -1,88 +1,101 @@
-import { noProfileImg } from "@/assets";
-import { Button } from "@components/custom/Button";
-import { getRequest } from "@/helper/api.helper";
-import { UserCard } from "@pages/user/Connections";
-import { useQuery } from "@tanstack/react-query";
+import { no_data } from "@/assets";
+import { IoReloadSharp } from "react-icons/io5";
 import { FC } from "react";
-import { Loading } from "@components/project/Loading";
-import { Link } from "react-router-dom";
-import InboxIcon from "@mui/icons-material/Inbox";
 import { InvitationInbox } from "@components/team/InvitationInbox";
-
-interface GETTeamResoponseInterface {
-  team_id: string;
-  team_name: string;
-  team_desc: string;
-  team_dp: string;
-  team_lead: {
-    user_name: string;
-    user_profile: string;
-  };
-}
+import InfiniteScroll from "react-infinite-scroll-component";
+import { MoonLoader } from "react-spinners";
+import { RiSearchLine } from "react-icons/ri";
+import { Input } from "@components/custom/Input";
+import { Loading } from "@components/project/Loading";
+import { TeamInterface, useTeam } from "@hooks/team/useTeams";
+import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
+import { TeamCard } from "@components/project/team/TeamCard";
 
 export const TeamOverview: FC = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["project", "team"],
-    queryFn: async () => {
-      const response = await getRequest("team");
-      return response.data as GETTeamResoponseInterface[];
-    },
-  });
+  const {
+    teamQuery: { data, isLoading },
+    fetchMoreDataMutation,
+    QUERY_KEY,
+  } = useTeam();
 
+  const { searchInputChangeHandler, increasePage, hasMore, searchInputRef } =
+    useInfiniteScroll<TeamInterface>(QUERY_KEY, fetchMoreDataMutation);
+
+  // const s = useUrlQuery();
+
+  // console.log(s.get('s'));
+
+  const generateRandom = () => {
+    let key = "";
+    for (let i = 0; i < 20; i++) {
+      key += Math.floor(Math.random() * 9);
+    }
+    return key;
+  };
   return (
-    <div className="text-white px-16 py-12">
+    <div className="text-light_mode_text dark:text-white px-16 py-12 flex flex-col gap-5">
       {isLoading && <Loading />}
       <div className="flex justify-between">
         <h3 className="font-semibold text-2xl mb-5">Team-Overview</h3>
         <div className="pe-5 cursor-pointer">
-          <InboxIcon />
           <InvitationInbox />
         </div>
       </div>
-      <div className="flex flex-wrap gap-2 px-8 py-6 w-full h-[900px] bg-hash_one rounded-md">
-        {data &&
-          data.map((team) => (
-            <div className="flex flex-col justify-between h-[400px] max-w-[350px] bg-hash_dark_two p-6 rounded-lg">
-              <div>
-                <div className="mr-4 float-left border-3 rounded-lg border-white">
-                  <img
-                    className="w-[100px] h-[100px] object-cover rounded-lg "
-                    src={
-                      team.team_dp
-                        ? `${import.meta.env.VITE_BASE_URL}/${team.team_dp}`
-                        : noProfileImg
-                    }
-                    alt="team profile"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-medium text-large mb-3">
-                    {team.team_name}
-                  </h3>
-                  <p className="max-h-[200px] ">
-                    {team.team_desc.length < 100
-                      ? team.team_desc
-                      : team.team_desc.slice(100) + "...."}
-                  </p>
-                </div>
+      <Input
+        ref={searchInputRef}
+        onChange={searchInputChangeHandler}
+        label="Search"
+        radius="lg"
+        color="hash"
+        classNames={{
+          inputWrapper: [
+            "shadow-xl",
+            "backdrop-blur-xl",
+            "backdrop-saturate-200",
+            "!cursor-text",
+          ],
+        }}
+        placeholder="Type to search..."
+        startContent={
+          <RiSearchLine className="text-black/50 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0 rotate-90" />
+        }
+      />
+
+      {data?.length === 0 && (
+        <div className="flex justify-center">
+          <img className="w-[700px]" src={no_data} />
+        </div>
+      )}
+
+      {data?.length && (
+        <div
+          id="scrollableDiv"
+          className="relative px-8 no-scrollbar py-8 w-full h-[800px] bg-light_mode_secondary dark:bg-hash_one rounded-md overflow-y-scroll"
+        >
+          <InfiniteScroll
+            dataLength={data.length}
+            next={increasePage}
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center py-20 ">
+                <MoonLoader color="white" />
               </div>
-              <div>
-                <div className="my-3">
-                  <h5 className="mb-2 font-semibold">Team lead</h5>
-                  <UserCard
-                    user_name={team.team_lead.user_name}
-                    user_profile={team.team_lead.user_profile}
-                  />
-                </div>
-                <div>
-                  <Link to={`/team/${team.team_id}`}>
-                    <Button className="w-full">Team Details</Button>
-                  </Link>
-                </div>
-              </div>
+            }
+            scrollableTarget="scrollableDiv"
+          >
+            <div className="flex flex-wrap gap-3 justify-center my-8">
+              {data.map((team) => (
+                <TeamCard key={generateRandom()} {...team} />
+              ))}
             </div>
-          ))}
-      </div>
+          </InfiniteScroll>
+          {hasMore && (
+            <div className="fixed bottom-[10%] right-[9%] bg-light_mode_hard dark:bg-black p-2 rounded-xl">
+              <IoReloadSharp size="28" />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
