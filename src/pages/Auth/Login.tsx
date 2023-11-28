@@ -8,12 +8,11 @@ import { loginSchema } from "../../utils/zodValidator";
 import { toast } from "react-toastify";
 import { useZodForm } from "../../hooks/useZodForm";
 import { useAuthErrorLog } from "../../hooks/useAuthErrorLog";
-import { isAxiosError } from "axios";
-import { postRequest } from "../../helper/api.helper";
 import { API_POST_LOGIN, API_POST_VALIDATE_2AF } from "../../constants/api.url";
 import { OTPCard } from "../../components/auth/OTP-card";
 import { Button } from "../../components/custom/Button";
 import { useUserStore } from "@/store/useUserStore";
+import { useFetch } from "@hooks/useFetch";
 
 export const Login: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,67 +21,60 @@ export const Login: FC = () => {
     useZodForm<LoginFormInterface>(loginSchema);
   useAuthErrorLog(errors as AuthErrorsInterface);
   const navigate = useNavigate();
-  const updateUser = useUserStore(state => state.updateUser);
+  const updateUser = useUserStore((state) => state.updateUser);
+  const { postRequest } = useFetch();
 
   const FormSubmitHandler = async (data: LoginFormInterface) => {
-    try {
-      setIsLoading(true);
-      const res = await postRequest(API_POST_LOGIN, data);
-      if (res.status === 200) {
-        toast.success("Login success");
-        updateUser(res.data as {user_id: string, user_name: string});
-        navigate("/personal/project");
-      } else {
-        toast.success("OTP sent successfully");
-        setIsOTPCardOpen(true);
-      }
-    } catch (err) {
+    setIsLoading(true);
+    const res = await postRequest(API_POST_LOGIN, data);
+    if (res.status === 200) {
+      toast.success("Login success");
+      updateUser((await res.json()) as { user_id: string; user_name: string, isTwoFacAuthEnabled: boolean });
+      navigate("/personal/project");
+    } else if (res.status === 201) {
+      toast.success("OTP sent successfully");
+      setIsOTPCardOpen(true);
+    } else {
       let message = "OPPS Something wrong";
-
-      if (isAxiosError(err)) {
-        if (err.response?.status === 400) {
-          message = "Incorrect email or password please try again";
-        }
+      if (res.status === 400) {
+        message = "Incorrect email or password please try again";
       }
       toast.error(message);
-    } finally {
-      setIsLoading(false);
     }
+
+    setIsLoading(false);
   };
 
   const OTPValidateFunction = async (otp: string) => {
-    try {
-      console.log("before fetching");
-      const response = await postRequest(API_POST_VALIDATE_2AF, {otp});
-      console.log("after fetching");
-      updateUser(response.data as {user_id: string, user_name: string});
+    const response = await postRequest(API_POST_VALIDATE_2AF, { otp });
+    console.log(response.status);
+    if (response.status === 200) {
+      updateUser(
+        (await response.json()) as { user_id: string; user_name: string, isTwoFacAuthEnabled: boolean }
+      );
       navigate("/personal/project");
       toast.success("OTP Verified");
-    } catch (err) {
-      console.log(err);
+    } else {
       let message = "OPPS Something went wrong";
-      if (isAxiosError(err)) {
-        if (err.response?.status == 400) {
-          message = err.response?.data.message || message;
-        } else if (err.response?.status === 401) {
-          message = "Plase enter your credential once more";
-        }
+      if (response.status == 400) {
+        console.log('bad request');
+        message = await response.text() || message;
+      } else if (response.status === 401) {
+        message = "Plase enter your credential once more";
       }
       toast.error(message);
-    } 
-  }
+    }
+  };
 
   return (
-    <>
       <div
-        className={`bg-primary w-full min-h-screen ${styles.flexCenter} py-16 md:py-40`}
+        className={`bg-light_mode_secondary dark:bg-primary w-full min-h-screen ${styles.flexCenter} py-16 md:py-40`}
       >
         <div
           className={` min-h-[600px] ${styles.boxWidth} ${styles.flexCenter}`}
         >
-          placeholder
           <div
-            className={`bg-dark_hash sm:w-[1000px] w-[500px] text-white md:py-24 py-14 flex flex-col sm:flex-row rounded-xl`}
+            className={`bg-light_mode_primary dark:bg-dark_hash sm:w-[1000px] w-[500px] dark:text-white md:py-24 py-14 flex flex-col sm:flex-row rounded-xl`}
           >
             <div
               className={`flex-1 w-full flex justify-center items-center flex-col`}
@@ -96,13 +88,13 @@ export const Login: FC = () => {
                   <h1 className="md:text-[34px] text-[24px] font-semibold font-poppins">
                     Login
                   </h1>
-                  <p className="md:text-lg text-medium font-poppins text-gray-400">
+                  <p className="md:text-lg text-medium font-poppins text-gray-600 dark:text-gray-400">
                     Hello, welcome back.
                   </p>
                 </div>
                 <form onSubmit={handleSubmit(FormSubmitHandler)}>
                   <div
-                    className={`flex-1 flex md:gap-4 gap-2 flex-col
+                    className={`flex-1 flex md:gap-4 gap-2 flex-col 
                   `}
                   >
                     <AuthInput
@@ -120,7 +112,7 @@ export const Login: FC = () => {
                     <Button
                       type="submit"
                       isLoading={isLoading}
-                      className="bg-light_hash rounded-3xl"
+                      className="dark:bg-light_hash rounded-3xl"
                     >
                       Login
                     </Button>
@@ -128,7 +120,7 @@ export const Login: FC = () => {
                       <Button
                         size="custom"
                         color="transperant"
-                        className="w-full rounded-3xl"
+                        className="w-full border-1 dark:bg-transparent bg-light_mode_tertiary rounded-3xl"
                       >
                         Sign up
                       </Button>
@@ -143,7 +135,7 @@ export const Login: FC = () => {
             </div>
             <div className={`flex-1 ${styles.flexCenter}`}>
               <div
-                className={`bg-hash_one h-[100%] w-[100%] rounded-l-xl flex-1 ${styles.flexCenter}`}
+                className={`bg-light_mode_hard dark:bg-hash_one h-[100%] w-[100%] rounded-l-xl flex-1 ${styles.flexCenter}`}
               >
                 <OTPCard
                   closeHandler={setIsOTPCardOpen}
@@ -155,6 +147,5 @@ export const Login: FC = () => {
           </div>
         </div>
       </div>
-    </>
   );
 };

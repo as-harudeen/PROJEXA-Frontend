@@ -4,7 +4,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import { ProjectStageInterface } from "../../interfaces/project/personal/space/stage.interface";
 import { ProjectStage } from "@components/project/personal/space/ProjectStage";
 import { useParams } from "react-router-dom";
-import { getRequest, patchRequest, postRequest } from "../../helper/api.helper";
 import {
   API_GET_PROJECT_STAGES,
   API_POST_CREATE_PROEJCT_STAGE,
@@ -15,6 +14,7 @@ import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import { TaskDetails } from "@components/project/personal/space/TaskDetails";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useFetch } from "@hooks/useFetch";
 
 export interface TaskDetailsInterface {
   stage_id: string;
@@ -25,6 +25,7 @@ export interface TaskDetailsInterface {
 export const ProjectSpace: FC = () => {
   const queryClient = useQueryClient();
   const stageInpRef = useRef<HTMLInputElement>(null);
+  const { getRequest, patchRequest, postRequest } = useFetch();
 
   const [taskDetails, setTaskDetails] = useState<TaskDetailsInterface | null>(
     null
@@ -33,6 +34,8 @@ export const ProjectSpace: FC = () => {
 
   const addProjectStageHandler = async () => {
     const newStageTitle = stageInpRef.current!.value.trim();
+    stageInpRef.current!.value = "";
+
     if (newStageTitle === "") {
       toast.error("Stage title can't be empty");
       return;
@@ -54,24 +57,27 @@ export const ProjectSpace: FC = () => {
       }
     );
 
+    const responseData = (await res.json()) as ProjectStageInterface;
+
     queryClient.setQueryData(
       ["project", "personal", "stages"],
-      (prev: ProjectStageInterface[]) =>
-        prev.map((stage) => {
+      (prev: ProjectStageInterface[]) => {
+        const updatedState = prev.map((stage) => {
           if (stage.stage_id === temp_stage_id) {
-            return res.data as ProjectStageInterface;
+            return responseData;
           }
           return stage;
-        })
+        });
+        return updatedState;
+      }
     );
-    stageInpRef.current!.value = "";
   };
 
   const { data: projectStages } = useQuery<ProjectStageInterface[]>({
     queryKey: ["project", "personal", "stages"],
     queryFn: async () => {
       const res = await getRequest(`${API_GET_PROJECT_STAGES}/${project_id}`);
-      return res.data as GetProjectStagesResponseInterface[];
+      return (await res.json()) as GetProjectStagesResponseInterface[];
     },
   });
 
@@ -123,14 +129,19 @@ export const ProjectSpace: FC = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(projectStages);
+  }, [projectStages?.length]);
+
   return (
-    <div className="text-white font-poppins px-16 py-8 relative">
+    
+    <div className="text-light_mode_text dark:text-white font-poppins px-8 md:px-16 py-8 relative">
       <div className="mb-8">
         <h3 className="font-semibold text-xl">Project Space</h3>
       </div>
 
       <DragDropContext onDragEnd={(result) => dragEndHandler(result)}>
-        <div className="flex gap-5 px-4 py-6 ">
+        <div className="flex gap-5 px-4 py-6 overflow-x-scroll no-scrollbar">
           {projectStages?.map((stage) => (
             <Droppable key={stage.stage_id} droppableId={stage.stage_id}>
               {(provided) => (
@@ -139,23 +150,23 @@ export const ProjectSpace: FC = () => {
                   {...provided.droppableProps}
                   ref={provided.innerRef}
                   {...stage}
-                  // setParentState={setProjectStages}
                   setTaskDetails={setTaskDetails}
                 />
               )}
             </Droppable>
           ))}
           <div>
-            <div className="relative max-w-[300px]">
+            <div className="relative min-w-[200px] max-w-[300px]">
               <Input
                 ref={stageInpRef}
+                onKeyUp={(e) => {
+                  if (e.key === "Enter") addProjectStageHandler();
+                }}
                 size="lg"
                 label="Add stage"
                 color="border"
                 classNames={{
                   inputWrapper: [
-                    "bg-opacity-30",
-                    "bg-light_hash",
                     "group-data-[focus=true]:bg-opacity-20",
                     "group-data-[hover=true]:bg-opacity-30",
                     "pe-14",

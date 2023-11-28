@@ -37,9 +37,14 @@ export const projectSchema = z.object({
     project_start_date: z.string(),
     project_end_date: z.string(),
     project_desc: z.string().trim().min(10)
-}).refine(data => new Date(data.project_start_date) < new Date(data.project_end_date), {
+})
+.refine(data =>  new Date(Date.now()) < new Date(data.project_start_date), {
+    message: "Start date can't be less than today",
+    path: ["project_start_date"]
+})
+.refine(data => new Date(data.project_start_date) < new Date(data.project_end_date), {
     message: "End date can't be previous date of start date",
-    path: ["endDate"]
+    path: ["project_end_date"]
 })
 
 

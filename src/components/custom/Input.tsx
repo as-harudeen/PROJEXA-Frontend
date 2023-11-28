@@ -44,10 +44,52 @@ export const Input = extendVariants(NexUIInput, {
         ],
         input: [
           "placeholder:text-sm",
-          "text-white",
+          "dark:text-white",
           "placeholder:text-light_hash",
+          "dark:placeholder:text-gray-400"
         ],
-        label: ["md:text-sm", "font-light", "text-sm", "font-poppins","text-white"],
+        label: [
+          "md:text-sm",
+          "font-light",
+          "text-sm",
+          "font-poppins",
+          "dark:text-white",
+        ],
+        inputWrapper: ["bg-light_mode_secondary", "dark:bg-hash_one"],
+      },
+      hash: {
+        label: ["dark:text-white", "text-light_mode_text"],
+        inputWrapper: [
+          "dark:bg-hash_one",
+          "bg-light_mode_tertiary",
+          "border-hash_one",
+          "group-data-[focus=true]:bg-light_mode_secondary",
+          "data-[hover=true]:bg-transperent",
+          "dark:group-data-[focus=true]:bg-hash_one",
+          "rounded-md",
+        ],
+        input: ["dark:text-white", "text-light_mode_text"],
+      },
+      searchBar: {
+        label: "text-black/50 dark:text-white/90",
+        input: [
+          "bg-transparent",
+          "text-black/90 dark:text-white/90",
+          "placeholder:text-default-700/50 dark:placeholder:text-white/60",
+        ],
+        innerWrapper: "bg-transparent",
+        inputWrapper: [
+          "shadow-xl",
+          "bg-default-200/50",
+          "dark:bg-default/60",
+          "backdrop-blur-xl",
+          "backdrop-saturate-200",
+          "hover:bg-default-200/70",
+          "dark:hover:bg-default/70",
+          "group-data-[focused=true]:bg-default-200/50",
+          "dark:group-data-[focused=true]:bg-default/60",
+          "!cursor-text",
+        ],
       },
     },
     size: {
@@ -60,8 +102,8 @@ export const Input = extendVariants(NexUIInput, {
         input: "text-small",
       },
       xl: {
-        inputWrapper: "h-unit-14 min-h-unit-14",
-        input: "text-medium",
+        inputWrapper: "md:h-unit-14  h-unit-10 min-h-unit-14",
+        input: "md:text-medium text-sm",
       },
       custom: {
         inputWrapper:

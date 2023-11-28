@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react";
 import { useZodForm } from "../../hooks/useZodForm";
-import { ProjectReferencesInterface } from "../../interfaces/project/personal/newProject.interface";
+import { ProjectReferencesInterface } from "../../interfaces/project";
 import { referenceSchema } from "../../utils/zodValidator";
 import { toast } from "react-toastify";
 import { Input } from "@nextui-org/react";
@@ -107,7 +107,7 @@ export const ProjectReferenceForm: FC<ProjectReferenceFormProps> = ({
   return (
     <div>
       <form onSubmit={handleSubmit(formSubmitHandler)}>
-        <div className="flex gap-2 w-full items-end i bg-dark_has">
+        <div className="flex gap-2 w-full items-end i bg-dark_has ">
           <Input
             {...register("title")}
             value={formData.title}
@@ -119,7 +119,14 @@ export const ProjectReferenceForm: FC<ProjectReferenceFormProps> = ({
             name="title"
             color="secondary"
             classNames={{
-              input: ["placeholder:text-white placeholder:text-opacity-60"],
+              input: [
+                "dark:placeholder:text-white placeholder:text-opacity-60",
+              ],
+              label: ["text-light_mode_text", "dark:text-white"],
+              inputWrapper: [
+                "border-light_mode_text",
+                "dark:border-light_hash",
+              ],
             }}
           />
           <Input
@@ -133,7 +140,14 @@ export const ProjectReferenceForm: FC<ProjectReferenceFormProps> = ({
             name="link"
             color="secondary"
             classNames={{
-              input: ["placeholder:text-white placeholder:text-opacity-60"],
+              input: [
+                "dark:placeholder:text-white placeholder:text-opacity-60",
+              ],
+              label: ["text-light_mode_text", "dark:text-white"],
+              inputWrapper: [
+                "border-light_mode_text",
+                "dark:border-light_hash",
+              ],
             }}
           />
           {editIdx !== null && (

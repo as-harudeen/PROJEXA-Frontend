@@ -1,15 +1,8 @@
-import { getRequest, patchRequest } from "@/helper/api.helper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { TaskDetails } from "./useTeamUsersTasks";
+import { useFetch } from "@hooks/useFetch";
 
 export type TaskStatus = "todo" | "doing" | "done";
-
-interface TaskDetails {
-  task_id: string;
-  task_title: string;
-  task_desc: string;
-  task_priority: string;
-  task_status: TaskStatus;
-}
 
 interface GETTeamProjectTaskResponse {
   todo_tasks: TaskDetails[];
@@ -32,6 +25,7 @@ export const useTeamProjectSpace = ({
 }) => {
   const QUERY_KEY = ["team", team_id, "project", project_id, "space"];
   const queryClient = useQueryClient();
+  const { getRequest, patchRequest } = useFetch();
 
   const teamProjectSpaceQuery = useQuery({
     queryKey: QUERY_KEY,
@@ -40,8 +34,7 @@ export const useTeamProjectSpace = ({
         `team/${team_id}/project/${project_id}/task`
       );
 
-      console.log(response.data);
-      return response.data as GETTeamProjectTaskResponse;
+      return (await response.json())as GETTeamProjectTaskResponse;
     },
   });
 
@@ -52,6 +45,8 @@ export const useTeamProjectSpace = ({
       task_status,
       new_task_status,
     }: ChangeTaskStatusParam) => {
+
+
       queryClient.setQueryData(
         QUERY_KEY,
         (prev: GETTeamProjectTaskResponse) => {
@@ -77,7 +72,7 @@ export const useTeamProjectSpace = ({
       );
 
       await patchRequest(
-        `team/${team_id}/project/${project_id}/task/${task_id}/status`,
+        `team/task/${task_id}/status`,
         {
           new_task_status,
         }

@@ -10,6 +10,7 @@ import {
 import { FC, useState } from "react";
 import { AiOutlineArrowsAlt } from "react-icons/ai";
 import { BsArrowsAngleContract } from "react-icons/bs";
+import InboxIcon from "@mui/icons-material/Inbox";
 
 interface TeamInvitationCardProps {
   team_invitation_id: string;
@@ -45,7 +46,7 @@ const TeamInvitationCard: FC<TeamInvitationCardProps> = ({
   };
 
   return (
-    <div className="py-6 px-4 bg-hash_two rounded-lg">
+    <div className="py-6 px-4 bg-light_mode_hard dark:bg-hash_two rounded-lg">
       <div className="flex justify-between items-center">
         <div className="flex gap-2">
           <div>
@@ -135,9 +136,9 @@ export const InvitationInbox: FC = () => {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>Open</Button>
+      <InboxIcon onClick={() => setIsOpen(true)} />
       <Modal
-        className="bg-hash_one text-white"
+        className="bg-light_mode_secondary dark:bg-hash_one text-light_mode_text dark:text-white"
         isOpen={isOpen}
         onClose={onClose}
       >

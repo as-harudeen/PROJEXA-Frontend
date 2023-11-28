@@ -1,18 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { noProfileImg } from "@/assets";
 import { Input } from "@nextui-org/react";
 import { FC } from "react";
 import { RiSearchLine } from "react-icons/ri";
-import { useQuery } from "@tanstack/react-query";
-import { getRequest } from "@/helper/api.helper";
 import { Loading } from "@components/project/Loading";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-
-type GETgetAllUsersResponseType = {
-  user_name: string;
-  user_profile: string;
-}[];
+import { useUsers } from "@hooks/useUsers";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { MoonLoader } from "react-spinners";
+import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
 
 interface UserCardProps {
   user_name: string;
@@ -20,11 +17,11 @@ interface UserCardProps {
 }
 
 export const UserCard = ({ user_name, user_profile }: UserCardProps) => (
-  <div className="px-4 py-2 flex justify-between items-center w-[300px] h-[80px] bg-hash_two rounded-xl">
+  <div className="px-4 py-2 flex justify-between items-center w-full min-w-[300px] md:h-[80px] sm:[h-70px] bg-light_mode_hard dark:bg-hash_two rounded-xl">
     <Link to={`/${user_name}`}>
       <div className="flex-1 flex items-center gap-3">
         <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
+          className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] object-cover rounded-full"
           src={
             user_profile
               ? `${import.meta.env.VITE_BASE_URL}/${user_profile}`
@@ -41,17 +38,14 @@ export const UserCard = ({ user_name, user_profile }: UserCardProps) => (
 );
 
 export const Connections: FC = () => {
-  const [searchValue, setSearchValue] = useState("");
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const response = await getRequest<GETgetAllUsersResponseType>(
-        "user/get-all-users"
-      );
-      console.log(response.data);
-      return response.data;
-    },
-  });
+  const {
+    usersQery: { data, isLoading, isError, error },
+    fetchMoreDataMutation,
+  } = useUsers();
+
+  const { hasMore, searchInputChangeHandler, searchInputRef, increasePage } =
+    useInfiniteScroll(["users"], fetchMoreDataMutation);
+
   useEffect(() => {
     if (error) {
       console.log(error);
@@ -59,19 +53,16 @@ export const Connections: FC = () => {
     }
   }, [isError]);
   return (
-    <div className="px-16 py-8 text-white font-poppins">
+    <div className="px-16 py-8 text-white font-poppins flex flex-col gap-10">
       {isLoading && <Loading />}
-      <div className="flex justify-between">
+      <div className="flex justify-between md:flex-row flex-col">
         <div>
           <h2 className="font-semibold text-xl">Connections</h2>
         </div>
         <div className="flex">
           <Input
-            value={searchValue}
-            onChange={(e) => {
-              const value = e.currentTarget.value;
-              setSearchValue(value);
-            }}
+            ref={searchInputRef}
+            onChange={searchInputChangeHandler}
             label="Search"
             radius="lg"
             classNames={{
@@ -102,16 +93,32 @@ export const Connections: FC = () => {
           />
         </div>
       </div>
-      <div className="w-full flex flex-wrap gap-5 pt-10">
-        {data &&
-          data.map((user) => (
-            <UserCard
-              key={user.user_name}
-              user_name={user.user_name}
-              user_profile={user.user_profile}
-            />
-          ))}
-      </div>
+      {data && (
+        <div id="scrollabelDiv" className="pt-10 h-[600px] overflow-y-scroll no-scrollbar ">
+          <InfiniteScroll
+            dataLength={data.length}
+            next={increasePage}
+            hasMore={hasMore}
+            loader={
+              <div className="flex justify-center py-20 ">
+                <MoonLoader color="white" />
+              </div>
+            }
+            scrollableTarget="scrollableDiv"
+          >
+            <div className="w-full flex flex-wrap gap-3">
+              {data.map((user) => (
+                <UserCard
+                  key={user.user_name}
+                  user_name={user.user_name}
+                  user_profile={user.user_profile}
+                  
+                />
+              ))}
+            </div>
+          </InfiniteScroll>
+        </div>
+      )}
     </div>
   );
 };

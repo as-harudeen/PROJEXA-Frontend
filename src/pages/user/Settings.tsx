@@ -1,27 +1,42 @@
-import { patchRequest } from "@/helper/api.helper";
+import { useThemeStore } from "@/store/useThemeStore";
+import { useUserStore } from "@/store/useUserStore";
+import { Loading } from "@components/project/Loading";
+import { useFetch } from "@hooks/useFetch";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   Switch,
 } from "@nextui-org/react";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export const Settings: FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { patchRequest } = useFetch();
   const twoFactorAuthToggleHandler = async (isSelected: boolean) => {
-    await patchRequest(
+    setIsLoading(true);
+    const res = await patchRequest(
       `user/two-factor-auth/${isSelected ? "enable" : "disable"}`,
       {}
     );
+    setIsLoading(false);
+
+    if (res.status === 200) {
+      if (user) updateUser({ ...user, isTwoFacAuthEnabled: isSelected });
+    }
   };
+
+  const { isDarkModeEnabled, toggle } = useThemeStore();
+  const { user, updateUser } = useUserStore();
   return (
-    <div className="text-white px-16 py-12">
+    <div className="text-light_mode_text dark:text-white px-16 py-12">
+      {isLoading && <Loading />}
       <div className="sm:mb-10 mb-5">
         <h2 className="font-semibold text-2xl">Settings</h2>
       </div>
-      <div>
-        <div className="flex justify-between bg-hash_one bg-opacity-70 px-8 py-6 rounded-md">
+      <div className="flex flex-col gap-3">
+        <div className="flex justify-between bg-light_mode_primary dark:bg-hash_one bg-opacity-70 px-8 py-6 rounded-md">
           <div className="flex gap-2 items-cente">
             <h5 className="font-semibold text-large">2-Factor Auth </h5>
             <Popover
@@ -61,8 +76,20 @@ export const Settings: FC = () => {
           </div>
           <div>
             <Switch
-              defaultSelected
+              defaultSelected={user?.isTwoFacAuthEnabled}
               onValueChange={twoFactorAuthToggleHandler}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-between bg-light_mode_primary dark:bg-hash_one bg-opacity-70 px-8 py-6 rounded-md">
+          <div className="flex gap-2 items-cente">
+            <h5 className="font-semibold text-large">Dark Mode</h5>
+          </div>
+          <div>
+            <Switch
+              defaultSelected={isDarkModeEnabled}
+              onValueChange={toggle}
             />
           </div>
         </div>

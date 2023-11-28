@@ -3,9 +3,9 @@ import {extendVariants, Button as NextUIButton} from "@nextui-org/react";
 export const Button = extendVariants(NextUIButton, {
   variants: {
     color: {
-        hash: "text-white bg-[#393939]",
-        light_hash: "text-white bg-light_hash",
-        transperant: "text-white bg-transperant border-2 border-white"
+        hash: "dark:text-white bg-light_mode_hard dark:bg-[#393939] shadow-md",
+        light_hash: "text-white bg-black dark:bg-light_hash",
+        transperant: "dark:text-white bg-transperant border-2 dark:border-white border-black"
     },
     isDisabled: {
       true: "bg-[#eaeaea] text-[#000] opacity-50 cursor-not-allowed",

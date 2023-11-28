@@ -1,7 +1,7 @@
-import { getRequest, patchRequest } from "@/helper/api.helper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
+import { useFetch } from "./useFetch";
 
 interface GETMyProfileResponse {
   user_email: string;
@@ -14,19 +14,20 @@ interface GETMyProfileResponse {
 
 const useUser = () => {
   const queryClient = useQueryClient();
+  const  { getRequest, patchRequest }  = useFetch();
 
   const getUser = useQuery({
     queryKey: ["user", "profile"],
     queryFn: async () => {
       const res = await getRequest("user/myprofile");
-      return res.data as GETMyProfileResponse;
+      return (await res.json()) as GETMyProfileResponse;
     },
   });
 
   const editUserMutation = useMutation({
     mutationFn: async (updatedData: Partial<GETMyProfileResponse>) => {
       const res = await patchRequest("user", updatedData);
-      return res.data;
+      return await res.json();
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["user", "profile"], data);
@@ -44,7 +45,7 @@ const useUser = () => {
 
   const updateUserProfileMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const res = await fetch("http://localhost:3000/user", {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
         method: "PATCH",
         body: formData,
         credentials: "include",

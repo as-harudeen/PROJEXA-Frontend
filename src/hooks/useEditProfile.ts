@@ -3,7 +3,7 @@ import {
   UpdatedDataStateInterface,
 } from "@pages/user/Profile";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import useUser from "./useUser";
+import useUser from "./useUserProfile";
 import { useUserStore } from "@/store/useUserStore";
 
 export const useUserProfile = () => {

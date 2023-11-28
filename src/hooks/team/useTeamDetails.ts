@@ -1,4 +1,4 @@
-import { deleteRequest, getRequest, postRequest } from "@/helper/api.helper";
+import { useFetch } from "@hooks/useFetch";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface UserBasicInfoInterface {
@@ -18,18 +18,19 @@ type GETTeamDetailsResponseInterface = {
   all_team_member_ids: string[];
   invitations: { team_invitee_id: string; team_invitation_id: string }[];
   isCurrentUserAdmin: boolean;
+  isCureentUserLeader: boolean;
 };
 
 export const useTeamDetails = (team_id: string) => {
   const queryClient = useQueryClient();
-
+  const { deleteRequest, getRequest, postRequest, patchRequest } = useFetch();
   const QUERY_KEY = ["team", team_id];
 
   const teamDetailsQuery = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
       const response = await getRequest(`team/${team_id}`);
-      return response.data as GETTeamDetailsResponseInterface;
+      return (await response.json()) as GETTeamDetailsResponseInterface;
     },
   });
 
@@ -40,14 +41,12 @@ export const useTeamDetails = (team_id: string) => {
         invitee_id: user_id,
       });
 
-      const { team_invitation_id } = response.data as {
+      const { team_invitation_id } = (await response.json()) as {
         team_invitation_id: string;
       };
       return { user_id, team_invitation_id };
     },
     onSuccess: ({ user_id, team_invitation_id }) => {
-      console.log("on success invitation");
-      console.log(team_invitation_id, user_id);
       queryClient.setQueryData(
         ["team", team_id],
         (prev: GETTeamDetailsResponseInterface) => {
@@ -76,7 +75,8 @@ export const useTeamDetails = (team_id: string) => {
           return {
             ...prev,
             invitations: prev.invitations.filter(
-              (invitation) => invitation.team_invitee_id !== team_invitation_id
+              (invitation) =>
+                invitation.team_invitation_id !== team_invitation_id
             ),
           };
         }
@@ -84,9 +84,69 @@ export const useTeamDetails = (team_id: string) => {
     },
   });
 
+  const promotedToAdmin = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async (user_id: string) => {
+      const res = await patchRequest(
+        `team/${team_id}/member/${user_id}/promote`,
+        {}
+      );
+      if (res.ok) {
+        queryClient.setQueryData(
+          QUERY_KEY,
+          (prev: GETTeamDetailsResponseInterface) => {
+            const user = prev.team_members.find((user) => user.user_id);
+            console.log(user);
+            if (!user) return user;
+            return {
+              ...prev,
+              team_members: prev.team_members.filter(
+                (member) => member.user_id !== user_id
+              ),
+              team_admins: [...prev.team_admins, user],
+            };
+          }
+        );
+      }
+    },
+  });
+
+
+
+
+  const demoteToMember = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async (user_id: string) => {
+      const res = await patchRequest(
+        `team/${team_id}/member/${user_id}/demote`,
+        {}
+      );
+      if (res.ok) {
+        queryClient.setQueryData(
+          QUERY_KEY,
+          (prev: GETTeamDetailsResponseInterface) => {
+            const user = prev.team_admins.find((user) => user.user_id === user_id);
+            console.log(user);
+            if (!user) return user;
+            return {
+              ...prev,
+              team_admins: prev.team_admins.filter(
+                (admin) => admin.user_id !== user_id
+              ),
+              team_members: [...prev.team_members, user],
+            };
+          }
+        );
+      }
+    },
+  });
+
+
   return {
     teamDetailsQuery,
     teamInviteMutation,
-    cancelTeamInviteMutation
+    cancelTeamInviteMutation,
+    promotedToAdmin,
+    demoteToMember
   };
 };

@@ -7,15 +7,18 @@ import { ToastContainer } from "react-toastify";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
+import { SocketContextProvider } from "./context/provider/SocketContextProvider.tsx";
 
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  <React.Fragment>
     <BrowserRouter>
       <NextUIProvider>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <SocketContextProvider>
+            <App />
+          </SocketContextProvider>
         </QueryClientProvider>
       </NextUIProvider>
     </BrowserRouter>
@@ -31,5 +34,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       pauseOnHover
       theme="light"
     />
-  </React.StrictMode>
+  </React.Fragment>
 );

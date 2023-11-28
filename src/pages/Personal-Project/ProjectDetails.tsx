@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { Button } from "../../components/custom/Button";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { EditProject } from "./EditProject";
 import { UpdateProjectStatusModal } from "@components/project/UpdateProjectStatusModal";
@@ -10,11 +10,12 @@ import { usePersonalProjectDetails } from "@hooks/project/personal-project/usePe
 export const ProjectDetails: FC = () => {
   const [isEditModeOn, setIsEditModeOn] = useState(false);
   const { project_id } = useParams();
+  const navigate = useNavigate();
 
   const {
     personalProjectDetailsQuery: { data: project, error, isLoading },
     updateStatusMutation,
-    updateProjectDetails
+    updateProjectDetails,
   } = usePersonalProjectDetails(project_id!);
 
   if (error) return <div className="text-white">{error.message}</div>;
@@ -74,14 +75,17 @@ export const ProjectDetails: FC = () => {
 
               <div className="py-16 flex gap-3">
                 <Button onClick={() => setIsEditModeOn(true)}>Edit</Button>
-                <Link to="space">
-                  <Button>Space</Button>
-                </Link>
+                <Button onClick={() => navigate("space")}>Space</Button>
               </div>
             </div>
           </div>
           {isEditModeOn && (
-            <EditProject updateState={updateProjectDetails} submitUrl={`project/personal/${project_id}`} toggleEditMode={setIsEditModeOn} {...project} />
+            <EditProject
+              updateState={updateProjectDetails}
+              submitUrl={`project/personal/${project_id}`}
+              toggleEditMode={setIsEditModeOn}
+              {...project}
+            />
           )}
         </>
       )}

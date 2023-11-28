@@ -2,6 +2,7 @@ export interface TaskInterface {
     task_id: string;
     task_title: string;
     task_desc: string;
+    task_priority: number;
 }
 
 
