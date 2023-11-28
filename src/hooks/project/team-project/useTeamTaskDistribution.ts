@@ -1,18 +1,12 @@
-import { getRequest, patchRequest, postRequest } from "@/helper/api.helper";
+import { EditedTaskDetails } from "@components/project/team/task-distribution/Task-Details-Modal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-export interface TeamTaskInterface {
-  task_id: string;
-  task_title: string;
-  task_priority: string;
-  task_desc: string;
-  task_status: string;
-}
+import { TaskDetails } from "./useTeamUsersTasks";
+import { useFetch } from "@hooks/useFetch";
 
 export type GETTeamTaskDistributionStagesResponse = {
   task_distribution_board_stage_id: string;
   task_distribution_board_stage_title: string;
-  tasks: TeamTaskInterface[];
+  tasks: TaskDetails[];
 }[];
 
 export interface POSTCreateTaskDitstributionStageResponse {
@@ -31,23 +25,34 @@ interface ChangeTaskStageMutationParam {
   new_stage_id: string;
 }
 
+interface UpdateTaskMutationParam {
+  task_id: string;
+  stage_id: string;
+  updated_task_details: EditedTaskDetails;
+}
+
 export const useTeamTaskDistribution = ({
   team_id,
   project_id,
 }: UseTeamTaskDistributionParam) => {
-  const QUERY_KEY = ["team", team_id, "task-distribution"];
+  const QUERY_KEY = ["team", team_id, "task-distribution", "stages"];
 
   const queryClient = useQueryClient();
+  const { getRequest, postRequest, patchRequest } = useFetch();
 
   const teamTaskDistributionQuery = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
       const response = await getRequest(
-        `team/${team_id}/project/${project_id}/task-distribution/stage`
+        `team/task-distribution/${project_id}/stage`
       );
-      console.log(response.data);
-      return response.data as GETTeamTaskDistributionStagesResponse;
+
+      // return response.data as GETTeamTaskDistributionStagesResponse;
+      return (await response.json()) as GETTeamTaskDistributionStagesResponse;
     },
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   const addNewTaskDitributionStageMutation = useMutation({
@@ -69,7 +74,7 @@ export const useTeamTaskDistribution = ({
       );
 
       const response = await postRequest(
-        `team/${team_id}/project/${project_id}/task-distribution/stage`,
+        `team/task-distribution/${project_id}/stage`,
         {
           task_distribution_board_stage_title: stage_name,
         }
@@ -77,7 +82,7 @@ export const useTeamTaskDistribution = ({
 
       return {
         temp_stage_id,
-        ...(response.data as POSTCreateTaskDitstributionStageResponse),
+        ...((await response.json()) as POSTCreateTaskDitstributionStageResponse),
       };
     },
     onSuccess({
@@ -109,10 +114,12 @@ export const useTeamTaskDistribution = ({
       stage_id,
       task_title,
       task_priority,
+      task_time_cap,
     }: {
       stage_id: string;
       task_title: string;
       task_priority: string;
+      task_time_cap: string;
     }) => {
       const temp_task_id = Date.now().toString();
       const newTask = {
@@ -120,30 +127,33 @@ export const useTeamTaskDistribution = ({
         task_desc: "",
         task_title,
         task_priority,
+        task_time_cap,
+        task_status: "todo",
       };
 
       queryClient.setQueryData(
         QUERY_KEY,
         (prev: GETTeamTaskDistributionStagesResponse) => {
-          return prev.map((stage) => {
+          const updatedState = prev.map((stage) => {
             if (stage.task_distribution_board_stage_id === stage_id) {
               return { ...stage, tasks: [...stage.tasks, newTask] };
             }
             return stage;
           });
+          return updatedState;
         }
       );
 
-      ("team/:team_id/project/:project_id/task-distribution/stage/:stage_id/task");
       const response = await postRequest(
-        `team/${team_id}/project/${project_id}/task-distribution/stage/${stage_id}/task`,
+        `team/task-distribution/${project_id}/stage/${stage_id}/task`,
         {
           task_title,
           task_priority,
+          task_time_cap,
         }
       );
 
-      const { task_id } = response.data as { task_id: string };
+      const { task_id } = (await response.json()) as { task_id: string };
       return {
         stage_id,
         task_id,
@@ -160,6 +170,7 @@ export const useTeamTaskDistribution = ({
                 ...stage,
                 tasks: stage.tasks.map((task) => {
                   if (task.task_id === temp_task_id) {
+                    console.log("Changing the task_id");
                     task.task_id = task_id;
                   }
                   return task;
@@ -217,7 +228,7 @@ export const useTeamTaskDistribution = ({
       );
 
       await patchRequest(
-        `team/${team_id}/project/${project_id}/task-distribution/change/stage/${stage_id_without_prefix}/task/${task_id}`,
+        `team/task-distribution/change/stage/${stage_id_without_prefix}/task/${task_id}`,
         { new_stage_id: new_stage_id_without_prefix }
       );
     },
@@ -249,14 +260,13 @@ export const useTeamTaskDistribution = ({
     },
   });
 
-
   const relocateTaskMutation = useMutation({
     mutationKey: QUERY_KEY,
     mutationFn: async ({
       task_details,
       stage_id,
     }: {
-      task_details: TeamTaskInterface;
+      task_details: TaskDetails;
       stage_id: string;
     }) => {
       queryClient.setQueryData(
@@ -273,12 +283,59 @@ export const useTeamTaskDistribution = ({
     },
   });
 
+  const updateTaskMutation = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async ({
+      task_id,
+      stage_id,
+      updated_task_details,
+    }: UpdateTaskMutationParam) => {
+      queryClient.setQueryData(
+        QUERY_KEY,
+        (prev: GETTeamTaskDistributionStagesResponse) => {
+          return prev.map((stage) => {
+            if (stage.task_distribution_board_stage_id === stage_id) {
+              return {
+                ...stage,
+                tasks: stage.tasks.map((task) => {
+                  if (task.task_id === task_id) {
+                    return { ...task, ...updated_task_details };
+                  }
+                  return task;
+                }),
+              };
+            }
+            return stage;
+          });
+        }
+      );
+
+      await patchRequest(`team/task/${task_id}`, updated_task_details);
+    },
+  });
+
+  const deleteStage = useMutation({
+    mutationKey: QUERY_KEY,
+    mutationFn: async ({ stage_id }: { stage_id: string }) => {
+      queryClient.setQueryData(
+        QUERY_KEY,
+        (prev: GETTeamTaskDistributionStagesResponse) => {
+          return prev.filter(
+            (stage) => stage.task_distribution_board_stage_id != stage_id
+          );
+        }
+      );
+    },
+  });
+
   return {
     teamTaskDistributionQuery,
     addNewTaskDitributionStageMutation,
     addNewTaskDistributionStageTask,
     changeTaskStageMutation,
     deleteTaskFromStageMutation,
-    relocateTaskMutation
+    relocateTaskMutation,
+    updateTaskMutation,
+    deleteStage
   };
 };
