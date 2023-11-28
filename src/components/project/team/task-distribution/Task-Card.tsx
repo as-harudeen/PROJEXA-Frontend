@@ -1,7 +1,6 @@
 import React, { FC, useState } from "react";
 import { TaskDetailsModal } from "./Task-Details-Modal";
 import { TaskDetails } from "@hooks/project/team-project/useTeamUsersTasks";
-import { DeleteConfirmModal } from "@components/project/DeleteConfirmModal";
 
 interface TaskCardProps {
   taskDetails: TaskDetails;

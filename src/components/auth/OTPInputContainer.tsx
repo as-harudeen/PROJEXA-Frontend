@@ -1,8 +1,4 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { isAxiosError } from "axios";
-import { toast } from "react-toastify";
-import { postRequest } from "../../helper/api.helper";
-import { useLocation, useNavigate } from "react-router-dom";
 
 interface OTPInputContainerProps {
   validateFn: (otp: string) => Promise<void>;
@@ -12,8 +8,6 @@ let currOTPIdx = 0;
 export const OTPInputContainer: FC<OTPInputContainerProps> = ({
   validateFn,
 }) => {
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(""));
   const [activeOtpIdx, setActiveOtpIdx] = useState(0);
   const otpInput = useRef<HTMLInputElement>(null);

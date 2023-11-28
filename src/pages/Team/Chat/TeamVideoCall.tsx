@@ -12,7 +12,7 @@ export const TeamVideoCall: FC = () => {
     
       const appID = 548342593;
 
-      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, room_id!, Date.now().toString(), 'achus');
+      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, import.meta.env.VITE_SEVER_SECRET, room_id!, Date.now().toString(), 'achus');
 
       const zc = ZegoUIKitPrebuilt.create(kitToken);
       zc.joinRoom({

@@ -36,10 +36,10 @@ export const EditTeam: FC = () => {
     setTeamDp(newDp);
   };
 
-  const dpRemoveButtonClickHandler = () => {
-    setTeamDp(null);
-    dpInputRef.current!.value = "";
-  };
+  // const dpRemoveButtonClickHandler = () => {
+  //   setTeamDp(null);
+  //   dpInputRef.current!.value = "";
+  // };
 
   const formSubmitHandler = async () => {
     const formData = new FormData();
