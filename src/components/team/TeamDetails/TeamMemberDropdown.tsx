@@ -18,36 +18,11 @@ interface TeamMemberDropdownProps {
   user_id: string;
 }
 
-// currentuserRole = team_lead
-// selectedUserRole = team_admin
-
-// options => make a team lead
-//            demote to member
-
-// currentuserRole = team_lead
-// selectedUserRole = team_member
-
-// options => promote to admin
-
-// currentuserRole = team_admin
-// selectedUserRole = team_admin
-
-// options => demote to member
-
-// currentuserRole = team_admin
-// selectedUserRole = team_member
-
-// options => promote to member
-
 export const TeamMemberDropdown: FC<TeamMemberDropdownProps> = ({
   user_id,
   currentUserRole,
   selectedUserRole,
 }) => {
-  console.log("user-id", user_id);
-  console.log("current-user-role", currentUserRole);
-  console.log("selected-user-role", selectedUserRole);
-
   const { team_id } = useParams();
 
   const { promotedToAdmin, demoteToMember } = useTeamDetails(team_id!);
@@ -72,32 +47,6 @@ export const TeamMemberDropdown: FC<TeamMemberDropdownProps> = ({
         </div>
       </DropdownTrigger>
       <DropdownMenu aria-label="Dynamic Actions">
-        {/* {currentUserRole === "team_lead" &&
-        selectedUserRole === "team_admin" ? (
-            // <DropdownItem>Make team lead</DropdownItem>
-            <DropdownItem onClick={demoteToMemberHandler}>
-              Demote to member
-            </DropdownItem>
-          
-        ) : currentUserRole === "team_lead" &&
-          selectedUserRole === "team_member" ? (
-          <DropdownItem onClick={promoteToAdminHanlder}>
-            Promote to admin
-          </DropdownItem>
-        ) : currentUserRole === "team_admin" &&
-          selectedUserRole === "team_admin" ? (
-          <DropdownItem onClick={demoteToMemberHandler}>
-            Demote to member
-          </DropdownItem>
-        ) : currentUserRole === "team_admin" &&
-          selectedUserRole === "team_member" ? (
-          <DropdownItem onClick={promoteToAdminHanlder}>
-            Promote to admin
-          </DropdownItem>
-        ) : (
-          <></>
-        )} */}
-
         {currentUserRole === "team_lead" &&
         selectedUserRole === "team_admin" ? (
           <DropdownItem>Make team lead</DropdownItem>
@@ -124,7 +73,6 @@ export const TeamMemberDropdown: FC<TeamMemberDropdownProps> = ({
         ) : (
           <DropdownItem className="hidden"></DropdownItem>
         )}
-        {/* {(currentUserRole)} */}
       </DropdownMenu>
     </Dropdown>
   );

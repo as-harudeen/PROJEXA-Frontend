@@ -112,8 +112,6 @@ export const useTeamDetails = (team_id: string) => {
   });
 
 
-
-
   const demoteToMember = useMutation({
     mutationKey: QUERY_KEY,
     mutationFn: async (user_id: string) => {

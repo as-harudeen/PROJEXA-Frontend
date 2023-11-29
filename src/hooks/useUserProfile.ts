@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useFetch } from "./useFetch";
 
@@ -33,13 +32,7 @@ const useUser = () => {
       queryClient.setQueryData(["user", "profile"], data);
     },
     onError: (err) => {
-      let message = "OPPS Something fishy";
-      if (isAxiosError(err)) {
-        if (err.response?.status === 400) {
-          message = err.response.data.message;
-        }
-      }
-      toast.error(message);
+      toast.error(err.message);
     },
   });
 
