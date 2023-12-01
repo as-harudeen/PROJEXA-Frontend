@@ -7,13 +7,8 @@ import { Loading } from "@components/project/Loading";
 import { Link } from "react-router-dom";
 import { useInView } from "react-intersection-observer";
 import { MoonLoader } from "react-spinners";
-import { useUsers } from "@hooks/useUsers";
+import { GETgetAllUsersResponseType, useUsers } from "@hooks/useUsers";
 
-type GETgetAllUsersResponseType = {
-  user_name: string;
-  user_profile: string;
-  user_id: string;
-}[];
 
 interface UserCardProps {
   user_name: string;
@@ -67,7 +62,6 @@ export const Connections: FC = () => {
 
   useEffect(() => {
     if (inView) {
-      console.log("Fetching next page");
       fetchNextPage();
     }
   }, [inView, hasNextPage, fetchNextPage]);
