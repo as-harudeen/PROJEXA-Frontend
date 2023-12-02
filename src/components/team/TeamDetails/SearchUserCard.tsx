@@ -10,6 +10,7 @@ interface SearchUserCard {
   user_profile?: string;
   invite_status: "invited" | "team_member" | "not_invited";
   team_invitation_id?: string;
+  innerRef?: React.Ref<HTMLDivElement>;
 }
 
 export const SearchUserCard: FC<SearchUserCard> = ({
@@ -18,6 +19,7 @@ export const SearchUserCard: FC<SearchUserCard> = ({
   user_profile,
   invite_status,
   team_invitation_id,
+  innerRef
 }) => {
   const { team_id } = useParams();
   const { teamInviteMutation, cancelTeamInviteMutation } = useTeamDetails(
@@ -29,12 +31,11 @@ export const SearchUserCard: FC<SearchUserCard> = ({
   };
 
   const cancelInvitationButtonClickHandler = () => {
-    console.log(team_invitation_id, "cancel id");
     if (team_invitation_id) cancelTeamInviteMutation.mutate(team_invitation_id);
   };
 
   return (
-    <div className="flex justify-between">
+    <div ref={innerRef} className="flex justify-between">
       <div className="flex gap-2">
         <div className="rounded-full border-l">
           <img

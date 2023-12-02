@@ -1,13 +1,12 @@
 import { Button } from "@components/custom/Button";
 import { Input } from "@components/custom/Input";
-import { useUsers } from "@hooks/useUsers";
+import { GETgetAllUsersResponseType, useUsers } from "@hooks/useUsers";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@nextui-org/react";
-import { FC, useState } from "react";
+import { ChangeEvent, FC, useEffect, useState } from "react";
 import { MoonLoader } from "react-spinners";
 import { SearchUserCard } from "./SearchUserCard";
 import { FiUserPlus } from "react-icons/fi";
-import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { useInView } from "react-intersection-observer";
 
 interface InvitationModalProps {
   team_member_ids: string[];
@@ -18,17 +17,32 @@ const InvitationModal: FC<InvitationModalProps> = ({
   team_member_ids,
   invitations,
 }) => {
+  const { ref, inView } = useInView();
   const [isOpen, setIsOpen] = useState(false);
   const {
-    usersQery: { data, isLoading },
-    fetchMoreDataMutation,
+    usersQuery: { data, isLoading, fetchNextPage, hasNextPage }, setSearch
   } = useUsers();
   const onClose = () => {
     setIsOpen(false);
   };
 
-  const { hasMore, searchInputChangeHandler, searchInputRef, increasePage } =
-    useInfiniteScroll(["users"], fetchMoreDataMutation);
+
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  let time: NodeJS.Timeout;
+  const onChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (time) clearTimeout(time);
+    const searchVal = e.currentTarget.value;
+    time = setTimeout(() => {
+      setSearch(searchVal);
+    }, 1000);
+  };
+
 
   return (
     <>
@@ -44,8 +58,7 @@ const InvitationModal: FC<InvitationModalProps> = ({
         <ModalContent>
           <ModalHeader className="flex flex-col gap-">
             <Input
-              ref={searchInputRef}
-              onChange={searchInputChangeHandler}
+              onChange={onChangeHandler}
               placeholder="Search here"
               color="hash"
             />
@@ -61,24 +74,13 @@ const InvitationModal: FC<InvitationModalProps> = ({
                 id="scrollableDiv"
                 className="max-h-[300px] overflow-y-scroll no-scrollbar"
               >
-                <InfiniteScroll
-                  dataLength={data.length}
-                  next={increasePage}
-                  hasMore={hasMore}
-                  loader={
-                    <div className="flex justify-center py-20 ">
-                      <MoonLoader color="white" />
-                    </div>
-                  }
-                  scrollableTarget="scrollableDiv"
-                >
-                  <div className="flex flex-col gap-4">
-                    {data.map((user) => {
+                <div className="flex flex-col gap-4">
+                  {data.pages.map((page: GETgetAllUsersResponseType, i) => (
+                    page.map((user, idx) => {
                       const isInvitee = invitations.find(
                         (invitation) =>
                           invitation.team_invitee_id === user.user_id
                       );
-
                       return (
                         <SearchUserCard
                           key={user.user_name}
@@ -95,11 +97,16 @@ const InvitationModal: FC<InvitationModalProps> = ({
                           team_invitation_id={
                             isInvitee ? isInvitee.team_invitation_id : ""
                           }
+                          innerRef={
+                            i === data.pages.length - 1 && idx === page.length - 1
+                              ? ref
+                              : null
+                          }
                         />
                       );
-                    })}
-                  </div>
-                </InfiniteScroll>
+                    })
+                  ))}
+                </div>
               </div>
             )}
           </ModalBody>
