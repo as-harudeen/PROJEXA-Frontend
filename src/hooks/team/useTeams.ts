@@ -1,5 +1,6 @@
 import { useFetch } from "@hooks/useFetch";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export interface TeamInterface {
   team_id: string;
@@ -13,56 +14,43 @@ export interface TeamInterface {
 }
 
 
-
 export const useTeam = () => {
-  const QUERY_KEY = ["team"];
-  const queryClient = useQueryClient();
+
   const {getRequest} = useFetch();
+  const [search, setSearch] = useState("");
+  
+  
+  const QUERY_KEY = ["team" , search];
 
-  const teamQuery = useQuery({
+  const fetchData = async ({ pageParam = 1 }) => {
+    const response = await getRequest(
+      `team?l=${
+        import.meta.env.VITE_FETCH_TEAM_LIMIT
+      }&p=${pageParam}&s=${search}`
+    );
+    return response.json();
+  };
+
+
+  const teamQuery = useInfiniteQuery({
     queryKey: QUERY_KEY,
-    queryFn: async () => {
-      const response = await getRequest("team?p=1");
-      // return response.data as TeamInterface[];
-      return await response.json() as TeamInterface[];
+    queryFn: fetchData,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage =
+        lastPage.length == import.meta.env.VITE_FETCH_TEAM_LIMIT
+          ? allPages.length + 1
+          : undefined;
+      return nextPage;
     },
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
   });
 
-  const fetchMoreDataMutation = useMutation({
-    mutationKey: QUERY_KEY,
-    mutationFn: async ({
-      currPage,
-      searchValue,
-    }: {
-      currPage: number;
-      searchValue: string;
-    }) => {
-      const res = await getRequest(
-        `team?p=${currPage}&l=${import.meta.env.VITE_FETCH_TEAM_LIMIT}&s=${
-          searchValue || ""
-        }`
-      );
-      return await res.json() as TeamInterface[];
-    },
-    onSuccess(data) {
-      if ((data as TeamInterface[]).length === 0) {
-        return;
-      }
-      queryClient.setQueryData(
-        QUERY_KEY,
-        (prev: TeamInterface[]) => {
-          return prev ? [...prev, ...data] : [...data];
-        }
-      );
-    },
-  });
+
+
+
 
   return {
     teamQuery,
-    fetchMoreDataMutation,
-    QUERY_KEY,
+    setSearch
   };
 };
