@@ -1,5 +1,6 @@
 import { useFetch } from "@hooks/useFetch";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export type GETTeamProjectsResponse = {
   project_name: string;
@@ -15,58 +16,36 @@ export type GETTeamProjectsResponse = {
 }[];
 
 export const useTeamProjects = (team_id: string) => {
-  const QUERY_KEY = ["team", "projects"];
-  const queryClient = useQueryClient();
   const { getRequest } = useFetch();
 
-  const teamProjectsQuery = useQuery({
+  const [search, setSearch] = useState("");
+
+  const QUERY_KEY = ["team", "projects", team_id, search];
+
+  const fetchData = async ({ pageParam = 1 }) => {
+    const res = await getRequest(
+      `team/projects/${team_id}?p=${pageParam}&l=${
+        import.meta.env.VITE_FETCH_TEAM_PROJECT_LIMIT
+      }&s=${search || ""}`
+    );
+    return res.json();
+  };
+
+  const teamProjectsQuery = useInfiniteQuery({
     queryKey: QUERY_KEY,
-    queryFn: async () => {
-      const response = await getRequest(
-        `team/projects/${team_id}?l=${
-          import.meta.env.VITE_FETCH_TEAM_PROJECT_LIMIT
-        }`
-      );
-      return (await response.json()) as GETTeamProjectsResponse;
+    queryFn: fetchData,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage =
+        lastPage.length == import.meta.env.VITE_FETCH_TEAM_PROJECT_LIMIT
+          ? allPages.length + 1
+          : undefined;
+      return nextPage;
     },
   });
-
-  const fetchMoreDataMutation = useMutation({
-    mutationKey: QUERY_KEY,
-    mutationFn: async ({
-      currPage,
-      searchValue,
-    }: {
-      currPage: number;
-      searchValue: string;
-    }) => {
-
-      const res = await getRequest(
-        `team/projects/${team_id}?p=${currPage}&l=${
-          import.meta.env.VITE_FETCH_TEAM_PROJECT_LIMIT
-        }&s=${searchValue || ""}`
-      );
-      // return res.data as GETTeamProjectsResponse;
-      return (await res.json()) as GETTeamProjectsResponse;
-
-    },
-    onSuccess: (data) => {
-      if ((data as GETTeamProjectsResponse).length === 0) {
-        return;
-      }
-      queryClient.setQueryData(QUERY_KEY, (prev: GETTeamProjectsResponse) => {
-        return [...prev, ...data];
-      });
-    },
-  });
-  
-
-
-
 
   return {
-    QUERY_KEY,
     teamProjectsQuery,
-    fetchMoreDataMutation,
+    setSearch,
   };
 };
