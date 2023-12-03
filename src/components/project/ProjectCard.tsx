@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import PendingIcon from "@mui/icons-material/Pending";
@@ -9,6 +9,7 @@ interface ProjectCardProps {
   project_desc: string;
   project_start_date: Date;
   project_end_date: Date;
+  innerRef?: React.Ref<HTMLDivElement>;
 }
 
 export const ProjectCard: FC<ProjectCardProps> = ({
@@ -17,9 +18,10 @@ export const ProjectCard: FC<ProjectCardProps> = ({
   project_desc,
   project_start_date,
   project_end_date,
+  innerRef
 }) => {
   return (
-    <div className="relative flex-1 flex flex-col justify-between bg-light_mode_hard dark:bg-hash_two rounded-lg min-w-full xs:min-w-[300px] max-w-[300px] px-6 py-4 text-light_mode_text dark:text-white">
+    <div ref={innerRef} className="relative flex-1 flex flex-col justify-between bg-light_mode_hard dark:bg-hash_two rounded-lg min-w-full xs:min-w-[300px] max-w-[300px] px-6 py-4 text-light_mode_text dark:text-white">
       <div className="absolute right-[-5px] top-[-5px]">
         <PendingIcon fontSize="large" />
       </div>
