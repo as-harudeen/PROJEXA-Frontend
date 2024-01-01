@@ -1,5 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useFetch } from "./useFetch";
+import { useState } from "react";
 
 type GETgetAllUsersResponseType = {
   user_name: string;
@@ -11,15 +12,34 @@ export const useUsers = () => {
   const queryClient = useQueryClient();
   const { getRequest} = useFetch();
 
-  const usersQery = useQuery({
-    queryKey: ["users"],
-    queryFn: async () => {
-      const response = await getRequest(
-        `user/get-all-users?l=${import.meta.env.VITE_FETCH_USERS_LIMIT}`
-      );
-      return (await response.json()) as GETgetAllUsersResponseType;
+  const [search, setSearch] = useState("");
+
+
+
+  const fetchData = async ({ pageParam = 1 }) => {
+    const response = await getRequest(
+      `user/get-all-users?l=${
+        import.meta.env.VITE_FETCH_USERS_LIMIT
+      }&p=${pageParam}&s=${search}`
+    );
+    return response.json();
+  };
+
+
+
+  const usersQuery = useInfiniteQuery({
+    queryKey: ["users", search],
+    queryFn: fetchData,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage =
+        lastPage.length == import.meta.env.VITE_FETCH_USERS_LIMIT
+          ? allPages.length + 1
+          : undefined;
+      return nextPage;
     },
   });
+
 
   const fetchMoreDataMutation = useMutation({
     mutationKey: ["users"],
@@ -51,7 +71,8 @@ export const useUsers = () => {
   });
 
   return {
-    usersQery,
-    fetchMoreDataMutation
+    usersQuery,
+    fetchMoreDataMutation,
+    setSearch
   }
 };

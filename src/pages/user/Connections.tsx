@@ -1,57 +1,86 @@
-import { useEffect } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { noProfileImg } from "@/assets";
 import { Input } from "@nextui-org/react";
 import { FC } from "react";
 import { RiSearchLine } from "react-icons/ri";
 import { Loading } from "@components/project/Loading";
-import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { useUsers } from "@hooks/useUsers";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { useInView } from "react-intersection-observer";
 import { MoonLoader } from "react-spinners";
-import { useInfiniteScroll } from "@hooks/useInfiniteScroll";
+import { useUsers } from "@hooks/useUsers";
+
+type GETgetAllUsersResponseType = {
+  user_name: string;
+  user_profile: string;
+  user_id: string;
+}[];
 
 interface UserCardProps {
   user_name: string;
   user_profile?: string;
+  innerRef?: React.Ref<HTMLDivElement>;
 }
 
-export const UserCard = ({ user_name, user_profile }: UserCardProps) => (
-  <div className="px-4 py-2 flex justify-between items-center w-full min-w-[300px] md:h-[80px] sm:[h-70px] bg-light_mode_hard dark:bg-hash_two rounded-xl">
-    <Link to={`/${user_name}`}>
-      <div className="flex-1 flex items-center gap-3">
-        <img
-          className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] object-cover rounded-full"
-          src={
-            user_profile
-              ? `${import.meta.env.VITE_BASE_URL}/${user_profile}`
-              : noProfileImg
-          }
-          alt=""
-        />
-        <div>
-          <h6 className="font-medium">{user_name}</h6>
+export const UserCard = ({
+  user_name,
+  user_profile,
+  innerRef,
+}: UserCardProps) => {
+  return (
+    <div
+      ref={innerRef}
+      className="px-4 py-2 flex justify-between items-center w-full min-w-[300px] md:h-[80px] sm:[h-70px] bg-light_mode_hard dark:bg-hash_two rounded-xl"
+    >
+      <Link to={`/${user_name}`}>
+        <div className="flex-1 flex items-center gap-3">
+          <img
+            className="w-[40px] h-[40px] md:w-[50px] md:h-[50px] object-cover rounded-full"
+            src={
+              user_profile
+                ? `${import.meta.env.VITE_BASE_URL}${user_profile}`
+                : noProfileImg
+            }
+            alt=""
+          />
+          <div>
+            <h6 className="font-medium">{user_name}</h6>
+          </div>
         </div>
-      </div>
-    </Link>
-  </div>
-);
+      </Link>
+    </div>
+  );
+};
 
 export const Connections: FC = () => {
+  const { ref, inView } = useInView();
+
   const {
-    usersQery: { data, isLoading, isError, error },
-    fetchMoreDataMutation,
+    usersQuery: {
+      fetchNextPage,
+      hasNextPage,
+      isLoading,
+      data,
+      isFetchingNextPage,
+    },
+    setSearch,
   } = useUsers();
 
-  const { hasMore, searchInputChangeHandler, searchInputRef, increasePage } =
-    useInfiniteScroll(["users"], fetchMoreDataMutation);
-
   useEffect(() => {
-    if (error) {
-      console.log(error);
-      toast.error(error.message);
+    if (inView) {
+      console.log("Fetching next page");
+      fetchNextPage();
     }
-  }, [isError]);
+  }, [inView, hasNextPage, fetchNextPage]);
+
+  let time: NodeJS.Timeout;
+  const onChangeHandler = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (time) clearTimeout(time);
+    const searchVal = e.currentTarget.value;
+    time = setTimeout(() => {
+      setSearch(searchVal);
+    }, 1000);
+  };
+
   return (
     <div className="px-16 py-8 text-white font-poppins flex flex-col gap-10">
       {isLoading && <Loading />}
@@ -61,8 +90,7 @@ export const Connections: FC = () => {
         </div>
         <div className="flex">
           <Input
-            ref={searchInputRef}
-            onChange={searchInputChangeHandler}
+            onChange={onChangeHandler}
             label="Search"
             radius="lg"
             classNames={{
@@ -94,29 +122,31 @@ export const Connections: FC = () => {
         </div>
       </div>
       {data && (
-        <div id="scrollabelDiv" className="pt-10 h-[600px] overflow-y-scroll no-scrollbar ">
-          <InfiniteScroll
-            dataLength={data.length}
-            next={increasePage}
-            hasMore={hasMore}
-            loader={
-              <div className="flex justify-center py-20 ">
-                <MoonLoader color="white" />
-              </div>
-            }
-            scrollableTarget="scrollableDiv"
-          >
-            <div className="w-full flex flex-wrap gap-3">
-              {data.map((user) => (
+        <div
+          id="scrollabelDiv"
+          className="pt-10 h-[600px] overflow-y-scroll no-scrollbar "
+        >
+          <div className="w-full flex flex-wrap gap-3">
+            {data.pages.map((pages: GETgetAllUsersResponseType, i) =>
+              pages.map((user, idx) => (
                 <UserCard
                   key={user.user_name}
                   user_name={user.user_name}
                   user_profile={user.user_profile}
-                  
+                  innerRef={
+                    i === data.pages.length - 1 && idx === pages.length - 1
+                      ? ref
+                      : null
+                  }
                 />
-              ))}
+              ))
+            )}
+          </div>
+          {isFetchingNextPage && (
+            <div className="flex justify-center py-20 ">
+              <MoonLoader color="white" />
             </div>
-          </InfiniteScroll>
+          )}
         </div>
       )}
     </div>
