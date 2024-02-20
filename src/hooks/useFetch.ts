@@ -17,19 +17,24 @@ export const useFetch = () => {
   };
 
   const postRequest = async <T extends object>(url: string, payload: T) => {
-    const res = await fetch(import.meta.env.VITE_BASE_URL + url, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    if (res.status === 401) {
-      toast.error("Unauthorized");
-      updateUser(null);
-    }
-    return res;
+    try {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + url, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (res.status === 401) {
+        toast.error("Unauthorized");
+        updateUser(null);
+      }
+      return res;
+    } catch (err) {
+      console.log(err);
+      throw new Error();
+    } 
   };
 
   const patchRequest = async <T extends object>(url: string, payload: T) => {

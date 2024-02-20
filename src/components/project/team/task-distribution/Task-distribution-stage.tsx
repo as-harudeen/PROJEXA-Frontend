@@ -135,7 +135,7 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
                       {...provider.draggableProps}
                       ref={provider.innerRef}
                       key={task.task_id}
-                      className={`border-1 border-light_mode_text dark:border-white bg-light_mode_hard shadow-lg w-full ps-4 py-2 rounded-md break-all flex justify-between`}
+                      className={`border-1 border-light_mode_text dark:border-white dark:bg-hash_two bg-light_mode_hard shadow-lg w-full ps-4 py-2 rounded-md break-all flex justify-between`}
                     >
                       <TaskCard stage_id={stage_id} taskDetails={task} />
                     </div>

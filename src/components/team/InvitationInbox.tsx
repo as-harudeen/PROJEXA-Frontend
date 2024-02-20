@@ -150,6 +150,7 @@ export const InvitationInbox: FC = () => {
             <div>
               {data?.map((invitation) => (
                 <TeamInvitationCard
+                  key={invitation.team_invitation_id}
                   team_invitation_id={invitation.team_invitation_id}
                   team_name={invitation.team.team_name}
                   team_desc={invitation.team.team_desc}

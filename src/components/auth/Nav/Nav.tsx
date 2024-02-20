@@ -8,9 +8,9 @@ export const Nav: FC = () => {
   const { user, updateUser } = useUserStore();
 
   return (
-    <nav className="w-full bg-light_mode_hard border-b border-light_hash shadow-xl dark:bg-primary flex justify-center">
+    <nav className="sticky top-0 md:top-[-20px] w-full shadow-xl flex justify-center bg-light_mode_secondary dark:bg-hash_two z-[1000000]">
       <div
-        className={`bg-light_mode_hard dark:bg-primary ${styles.boxWidth} flex justify-between items-center px-6 md:px-16 py-3 md:py-6`}
+        className={`bg-light_mode_hard dark:bg-primary ${styles.boxWidth} flex justify-between items-center px-6 md:px-16 py-3 md:py-6 md:mt-6 rounded-md ring-1 ring-hash_one shadow-2xl shadow-slate-800` }
       >
         <div>
           <Link to="/">
@@ -27,7 +27,7 @@ export const Nav: FC = () => {
                   className={`font-poppins dark:text-white ${
                     location.pathname === "/auth/login"
                       ? "underline underline-offset-2 "
-                      : "opacity-50"
+                      : "opacity-50 hover:opacity-100"
                   }`}
                 >
                   Login
@@ -38,7 +38,7 @@ export const Nav: FC = () => {
                   className={`font-poppins dark:text-white ${
                     location.pathname === "/auth/register"
                       ? "underline underline-offset-2"
-                      : "opacity-50"
+                      : "opacity-50 hover:opacity-100"
                   }`}
                 >
                   Register

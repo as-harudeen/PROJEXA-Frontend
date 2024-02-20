@@ -8,7 +8,7 @@ import { registerSchema } from "../../../utils/zodValidator";
 import { useAuthErrorLog } from "@hooks/useAuthErrorLog";
 import { AuthInput } from "../input/AuthInput";
 import { PasswordInput } from "../input/PasswordInput";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@components/custom/Button";
 import { registerFormStyles } from "../styles";
 import { useAuthOTP } from "@hooks/useAuthOTP";
@@ -17,8 +17,9 @@ interface RegisterFormProps {
   setIsRegistered: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const RegisterForm: FC<RegisterFormProps> = ({ setIsRegistered }) => {
+export const RegisterForm: FC<RegisterFormProps> = ({setIsRegistered}) => {
   const [isLoading, setIsLoading] = useState(false);
+
 
   const { handleSubmit, register, errors } =
     useZodForm<RegisterFormInterface>(registerSchema);

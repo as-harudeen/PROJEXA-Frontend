@@ -12,7 +12,7 @@ export const NewTeamProject: FC = () => {
   const createTeamProjectHandler = async (
     data: CreateProjectDataInterface
   ) => {
-    await postRequest(`/team/${team_id}/projects/new`,data);
+    await postRequest(`team/projects/${team_id}/new`,data);
   };
 
   return (

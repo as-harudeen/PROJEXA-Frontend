@@ -1,3 +1,4 @@
+import { lading_page_img_one, lading_page_img_two } from "@/assets";
 import { Nav } from "@components/auth/Nav/Nav";
 import { FC } from "react";
 import {
@@ -68,10 +69,14 @@ export const LandingPage: FC = () => {
                 </div>
               </div>
             </div>
-            <div className="border rounded-xl flex-1 min-w-[50%]"></div>
+            <div className="rounded-xl flex-1 min-w-[50%]">
+              <img src={lading_page_img_two}/>
+            </div>
           </div>
           <div className="flex md:flex-row flex-col gap-8 p-4 sm:p-12 font-poppins">
-            <div className="border rounded-xl flex-1 min-w-[50%]"></div>
+            <div className="rounded-xl flex-1 min-w-[50%]">
+              <img src={lading_page_img_one} alt="" />
+            </div>
 
             <div className="flex flex-col gap-5">
               <div className="flex-1 flex gap-5 flex-col sm:flex-row md:flex-col lg:flex-row">

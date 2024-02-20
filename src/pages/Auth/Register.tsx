@@ -35,13 +35,17 @@ export const Register: FC = () => {
   return (
     <>
       <div
-        className={`bg-light_mode_secondary dark:bg-primary min-h-screen w-full ${styles.flexCenter} py-16 `}
+        className={`bg-light_mode_secondary dark:bg-hash_two min-h-screen w-full ${styles.flexCenter} py-16 `}
       >
         <div
           className={` min-h-[600px] ${styles.boxWidth} ${styles.flexCenter}`}
         >
+
+
+      {/* <div className="absolute bg-gray-500 rounded-full w-[50%] h-[50%] -left-[35%] opacity-20  top-32 filter blur-2xl "></div> */}
+
           <div
-            className={`bg-light_mode_primary dark:bg-dark_hash sm:w-[1000px] w-[500px] dark:text-white md:py-24 py-14 flex flex-col sm:flex-row rounded-xl`}
+            className={`bg-light_mode_primar dark:bg-hash_dark_two/40 backdrop-blur-xl sm:w-[1000px] w-[500px] dark:text-white md:py-24 py-14 flex flex-col sm:flex-row rounded-xl ring-1 ring-hash_one shadow-2xl shadow-slate-700`}
           >
             <div
               className={`flex-1 w-full flex justify-center items-center flex-col`}
@@ -69,7 +73,7 @@ export const Register: FC = () => {
             </div>
             <div className={`flex-1 ${styles.flexCenter}`}>
               <div
-                className={`bg-light_mode_hard dark:bg-hash_one h-[100%] w-[100%] rounded-l-xl flex-1 ${styles.flexCenter}`}
+                className={`bg-light_mode_hard dark:bg-hash_one/40 backdrop-blur-xl h-[100%] w-[100%] rounded-l-xl flex-1 ${styles.flexCenter}`}
               >
                 <OTPCard
                   isOpen={isRegistered}

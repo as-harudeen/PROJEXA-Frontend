@@ -10,7 +10,7 @@ export const SocketContextProvider: FC<SocketContextProviderProps> = ({
   children,
 }) => {
   const socket = useMemo(
-    () => io("ws://localhost:8000", { withCredentials: true }),
+    () => io("ws://localhost:3000", { withCredentials: true }),
     []
   );
 

@@ -37,8 +37,6 @@ export const App = () => {
         <Route path="register" element={<Register />} />
       </Route>
 
-      <Route path="/notfound" element={<NotFound />} />
-
       <Route path="/" element={<LandingPage />} />
       <Route path="/" element={<ProtectedRoute />}>
         <Route path="/:user_name" element={<IndividualProfile />}>
@@ -91,6 +89,7 @@ export const App = () => {
           <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };

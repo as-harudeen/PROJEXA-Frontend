@@ -5,17 +5,22 @@ import { UserCard } from "@pages/user/Connections";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const TeamCard: FC<TeamInterface> = ({
+interface ITeamCardProps extends TeamInterface {
+  innerRef?: React.Ref<HTMLDivElement>;
+}
+
+export const TeamCard: FC<ITeamCardProps> = ({
   team_dp,
   team_name,
   team_desc,
   team_id,
-  team_lead,
+  team_lead,innerRef
 }) => {
   const navigate = useNavigate();
 
+
   return (
-    <div className="flex flex-col justify-between h-[400px] max-w-[350px] bg-light_mode_primary shadow-md border border-light_mode_text dark:bg-hash_dark_two p-6 rounded-lg">
+    <div ref={innerRef} className="flex flex-col justify-between h-[400px] max-w-[350px] bg-light_mode_primary shadow-md border border-light_mode_text dark:bg-hash_dark_two p-6 rounded-lg">
       <div>
         <div className="mr-4 float-left border-3 rounded-lg border-white">
           <img
