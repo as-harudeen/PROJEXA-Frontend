@@ -1,15 +1,13 @@
 import { Button } from "@components/custom/Button";
 import { Input } from "@components/custom/Input";
 import { ProjectStageInterface } from "interfaces/project/personal/space/stage.interface";
-import React, { forwardRef, useRef } from "react";
-import { API_POST_CREATE_STAGE_TASK } from "@/constants/api.url";
+import React, { forwardRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { Draggable } from "react-beautiful-dnd";
 import { TaskDetailsInterface } from "@pages/Personal-Project/ProjectSpace";
-import { useQueryClient } from "@tanstack/react-query";
-import { useFetch } from "@hooks/useFetch";
 import { DeleteConfirmModal } from "@components/project/DeleteConfirmModal";
+import { usePersonalProjectStage } from "@hooks/project/personal-project/usePersonalProjectStage";
 
 type ProjectStageProps = {
   setTaskDetails: React.Dispatch<
@@ -23,56 +21,10 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
     { stage_id, stage_title, tasks, placeholder, setTaskDetails, ...props },
     ref
   ) => {
-    const queryClient = useQueryClient();
-    const taskInpRef = useRef<HTMLInputElement>(null);
     const { project_id } = useParams();
-    const { postRequest, deleteRequest } = useFetch();
 
-    const addTaskHandler = async () => {
-      const taskTitle = taskInpRef.current!.value;
-      taskInpRef.current!.value = "";
-      const temp_task_id = Date.now().toString();
-      const newTask = {
-        task_id: temp_task_id,
-        task_title: taskTitle,
-        task_desc: "",
-      };
-      queryClient.setQueryData(
-        ["project", "personal", "stages"],
-        (prev: ProjectStageInterface[]) =>
-          prev.map((stage) => {
-            if (stage.stage_id === stage_id) {
-              return { ...stage, tasks: [...stage.tasks, newTask] };
-            }
-            return stage;
-          })
-      );
-      const res = await postRequest(
-        `${API_POST_CREATE_STAGE_TASK}/${project_id}/${stage_id}`,
-        { task_title: taskTitle }
-      );
-      //todo change the response type to another folder
-      const task_id = ((await res.json()) as { task_id: string }).task_id;
+    const {addTaskHandler, deleteStageHandler, taskInpRef} = usePersonalProjectStage(project_id!, stage_id);
 
-      queryClient.setQueryData(
-        ["project", "personal", "stages"],
-        (prev: ProjectStageInterface[]) =>
-          prev.map((stage) => {
-            if (stage.stage_id === stage_id) {
-              return {
-                ...stage,
-                tasks: stage.tasks.map((task) => {
-                  if (task.task_id === temp_task_id) {
-                    task.task_id = task_id;
-                  }
-                  return task;
-                }),
-              };
-            }
-            return stage;
-          })
-      );
-    };
 
     const taskOnClickHandler = ({
       task_id,
@@ -86,16 +38,6 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
       setTaskDetails({ stage_id, task_id, task_title, task_desc });
     };
 
-    const deleteStageHandler = async () => {
-      const res = await deleteRequest(`project-stage/${stage_id}`);
-      if (res.ok) {
-        queryClient.setQueryData(
-          ["project", "personal", "stages"],
-          (prev: ProjectStageInterface[]) =>
-            prev.filter((stage) => stage.stage_id !== stage_id)
-        );
-      }
-    };
 
     return (
       <div

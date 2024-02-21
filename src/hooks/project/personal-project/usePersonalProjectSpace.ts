@@ -75,7 +75,7 @@ export const usePersonalProjectSpace = (project_id: string) => {
           new_position: destination.index,
         });
         queryClient.setQueryData(
-          ["project", "personal", "stages"],
+          QUERY_KEY,
           (prev: ProjectStageInterface[]) =>
             prev.map((stage) => {
               if (stage.stage_id === source.droppableId) {
@@ -107,7 +107,7 @@ export const usePersonalProjectSpace = (project_id: string) => {
         new_stage_id: destination.droppableId,
       });
       queryClient.setQueryData(
-        ["project", "personal", "stages"],
+        QUERY_KEY,
         newProjectStages
       );
     }
