@@ -1,16 +1,14 @@
 import { Button } from "@components/custom/Button";
 import { Input } from "@components/custom/Input";
-import { useTeamTaskDistribution } from "@/hooks/project/team-project/useTeamTaskDistribution";
 import { Select, SelectItem } from "@nextui-org/react";
 
-import { ChangeEvent, FC, useState } from "react";
+import {FC } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { useParams } from "react-router-dom";
 import { TaskCard } from "./Task-Card";
 import { TaskDetails } from "@hooks/project/team-project/useTeamUsersTasks";
 import { DeleteConfirmModal } from "@components/project/DeleteConfirmModal";
-import { useFetch } from "@hooks/useFetch";
-import { toast } from "react-toastify";
+import { useTaskDistributionStage } from "@hooks/project/team-project/useTaskDistributionStage";
 
 interface TaskDistributionStageProps {
   stage_id: string;
@@ -18,86 +16,22 @@ interface TaskDistributionStageProps {
   tasks: TaskDetails[];
 }
 
-interface TaskStateInterface {
-  task_title: string;
-  task_priority: "1" | "2" | "3" | "4" | "5";
-  task_time_cap: string;
-}
 
 export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
   stage_id,
   stage_title,
   tasks,
 }) => {
-  const [taskState, setTaskState] = useState<TaskStateInterface>({
-    task_title: "",
-    task_priority: "5",
-    task_time_cap: "2",
-  });
-
   const { team_id, project_id } = useParams();
-  const { deleteRequest } = useFetch();
 
-  const { addNewTaskDistributionStageTask, deleteStage } =
-    useTeamTaskDistribution({
-      team_id: team_id!,
-      project_id: project_id!,
-    });
-
-  const taskTitleInputChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value;
-    setTaskState((prev) => ({ ...prev, task_title: value }));
-  };
-
-  const taskPrioritySelectorChangeHandler = (
-    e: ChangeEvent<HTMLSelectElement>
-  ) => {
-    const selectedPriority = e.target.value;
-    if (
-      selectedPriority == "1" ||
-      selectedPriority == "2" ||
-      selectedPriority == "3" ||
-      selectedPriority == "4" ||
-      selectedPriority == "5"
-    )
-      setTaskState((prev) => ({ ...prev, task_priority: selectedPriority }));
-  };
-
-  const addTaskButtonClickHandler = () => {
-    addNewTaskDistributionStageTask.mutate({
-      stage_id,
-      task_title: taskState.task_title,
-      task_priority: taskState.task_priority,
-      task_time_cap: taskState.task_time_cap,
-    });
-    setTaskState((prev) => ({ ...prev, task_title: "" }));
-  };
-
-  const taskTimeCapChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.currentTarget.value;
-    if (!value || !isNaN(+value)) {
-      setTaskState((prev) => ({ ...prev, task_time_cap: value }));
-    }
-  };
-
-  // const taskTimeCapOnBlurHandler = (
-  //   e: React.FocusEvent<HTMLInputElement, Element>
-  // ) => {
-  //   const value = e.currentTarget.value;
-  //   console.log(value);
-  //   if (value === "") {
-  //     setTaskState((prev) => ({ ...prev, task_time_cap: "2" }));
-  //   }
-  // };
-
-  const deleteStageHandler = async () => {
-    const res = await deleteRequest(`team/task-distribution/stage/${stage_id}`);
-    if (res.ok) {
-      deleteStage.mutate({ stage_id });
-    } else {
-      toast.error("OPPS Something went wrong");
-    }
-  };
+  const {
+    taskState,
+    addTaskButtonClickHandler,
+    deleteStageHandler,
+    taskPrioritySelectorChangeHandler,
+    taskTimeCapChangeHandler,
+    taskTitleInputChangeHandler,
+  } = useTaskDistributionStage(team_id!, project_id!, stage_id);
 
   return (
     <div
@@ -107,8 +41,7 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
       <div className="absolute right-1">
         <DeleteConfirmModal
           title="Are you sure?"
-          body="All tasks of this stage will also will be deleted!. 
-            are you really want delete the stage? "
+          body="do really want to delete this stage? "
           confirmButtonHandler={deleteStageHandler}
         />
       </div>
