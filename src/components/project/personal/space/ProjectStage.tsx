@@ -42,7 +42,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
     return (
       <div
         {...props}
-        className="relative border h-full border-light_mode_text dark:border-white px-6 py-4 w-[300px] md:w-[360px] rounded-md bg-light_mode_primary dark:bg-hash_one bg-opacity-50 max-h-screen overflow-y-scrol shadow-lg"
+        className="relative h-full px-6 py-4 w-[300px] md:w-[360px] rounded-md bg-light_mode_primary dark:bg-white/10 ring-1 ring-white/30 bg-opacity-50 max-h-screen overflow-y-scrol shadow-lg "
       >
         <div className="absolute right-1">
           <DeleteConfirmModal
@@ -71,7 +71,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
                     {...provided.dragHandleProps}
                     {...provided.draggableProps}
                     ref={provided.innerRef}
-                    className="border border-light_mode_text dark:border-white rounded-md px-2 md:px-4 py-2 max-h-[100px] break-all shadow-md"
+                    className="border border-light_mode_text dark:border-white/60 rounded-md px-2 md:px-4 py-2 max-h-[100px] break-all shadow-md dark:bg-white/10 backdrop-blur-md"
                   >
                     {task.task_title}
                   </div>
@@ -80,7 +80,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
             ))}
             {placeholder}
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 pt-4 px">
             <Input
               ref={taskInpRef}
               onKeyDown={(e) => {

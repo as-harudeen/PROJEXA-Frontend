@@ -44,12 +44,14 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
   });
 
   return (
-    <div className="absolute w-full sm:w-[460px] md:w-[600px]  no-scrollbar bg-light_mode_primary dark:bg-dark_hash top-10 right-[50%] translate-x-[50%] px-12 py-6 z-20 font-poppins rounded-t-md">
+    <div className="absolute w-full sm:w-[460px] md:w-[600px] min-h-[50vh] no-scrollbar bg-light_mode_primary dark:bg-dark_hash/50 backdrop-blur-xl ring-1  top-10 right-[50%] translate-x-[50%] px-12 py-6 z-20 font-poppins rounded-t-md shadow-lg shadow-slate-600">
       <div
         onClick={() => setTaskDetails(null)}
-        className="absolute top-[-12px] right-[-12px]"
+        className="absolute top-[-8px] right-[-8px] cursor-pointer"
       >
-        <MdClose size="32" />
+        <div className="rounded-full bg-red-50/20 hover:bg-red-50/40">
+          <MdClose size="22" />
+        </div>
       </div>
       {!onEditMode && (
         <div className="absolute right-3 top-3 flex items-center">
@@ -63,6 +65,11 @@ export const TaskDetails: FC<TaskDetailsProps> = ({
               confirmButtonHandler={taskDeleteHandler}
             />
           </div>
+        </div>
+      )}
+      {onEditMode && (
+        <div className="pb-4">
+          <h1>Edit task</h1>
         </div>
       )}
       <div className="mb-2">

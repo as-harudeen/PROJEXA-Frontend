@@ -18,10 +18,13 @@ export const ProjectCard: FC<ProjectCardProps> = ({
   project_desc,
   project_start_date,
   project_end_date,
-  innerRef
+  innerRef,
 }) => {
   return (
-    <div ref={innerRef} className="relative flex-1 flex flex-col justify-between bg-light_mode_hard dark:bg-hash_two rounded-lg min-w-full xs:min-w-[300px] max-w-[300px] px-6 py-4 text-light_mode_text dark:text-white">
+    <div
+      ref={innerRef}
+      className="relative flex-1 flex flex-col justify-between bg-light_mode_hard dark:bg-white/10 backdrop-blur-lg ring-1 ring-white/50 shadow-lg rounded-lg min-w-full xs:min-w-[300px] max-w-[300px] px-6 py-4 text-light_mode_text dark:text-white"
+    >
       <div className="absolute right-[-5px] top-[-5px]">
         <PendingIcon fontSize="large" />
       </div>
@@ -49,7 +52,7 @@ export const ProjectCard: FC<ProjectCardProps> = ({
       </div>
       <div>
         <Link to={`${project_id}`}>
-          <button className="w-full border border-light_mode_text py-2 rounded-md font-nunito font-medium bg-light_mode_tertiary dark:bg-hash_dark_two">
+          <button className="w-full border border-light_mode_text py-2 rounded-md font-nunito font-medium bg-light_mode_tertiary dark:bg-hash_dark_two/30 backdrop-blur-lg hover:dark:bg-hash_dark_two/40">
             Project Details
           </button>
         </Link>

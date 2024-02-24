@@ -64,7 +64,7 @@ export const NewProject: FC<NewProjectProps> = ({ createProjectHandler }) => {
         New Project
       </h1>
       <div className="flex flex-col gap-6 w-full">
-        <div className="flex-1 md:px-8 px-3 md:py-6 py-3 shadow-lg bg-light_mode_secondary dark:bg-hash_one rounded-lg ">
+        <div className="flex-1 md:px-8 px-3 md:py-6 py-3 shadow-lg bg-light_mode_secondary dark:bg-white/10 backdrop-blur-md ring-1 ring-white/50 rounded-lg ">
           <h3 className="font-poppins font-medium sm:text-lg mb-3">
             Project Reference
           </h3>
@@ -121,7 +121,7 @@ export const NewProject: FC<NewProjectProps> = ({ createProjectHandler }) => {
             setEditIdx={setEditIdx}
           />
         </div>
-        <div className="flex-1 bg-light_mode_secondary shadow-lg dark:bg-hash_one rounded-lg md:px-8 px-3 md:py-6 py-3">
+        <div className="flex-1 bg-light_mode_secondary shadow-lg dark:bg-white/10 backdrop-blur-lg ring-1 ring-white/30 rounded-lg md:px-8 px-3 md:py-6 py-3">
           <form onSubmit={handle(submitHandler)}>
             <div className="flex flex-col gap-4">
               <h3 className="font-poppins font-medium md:text-lg mb-3">
@@ -229,6 +229,7 @@ export const NewProject: FC<NewProjectProps> = ({ createProjectHandler }) => {
               </div>
               <Button
                 type="submit"
+                color="transperant"
               >
                 Add project
               </Button>

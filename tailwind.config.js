@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         primary: "#00040f",
         secondary: "#fff",
+        tertiary: "#575acb",
         light_hash: "#7A7A7A",
         hash_one: "#4B4B4B",
         dark_hash: "#292929",
