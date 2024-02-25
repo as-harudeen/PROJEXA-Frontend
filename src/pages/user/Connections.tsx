@@ -24,7 +24,7 @@ export const UserCard = ({
   return (
     <div
       ref={innerRef}
-      className="px-4 py-2 flex justify-between items-center w-full min-w-[300px] md:h-[80px] sm:[h-70px] bg-light_mode_hard dark:bg-hash_two rounded-xl"
+      className="px-4 py-2 flex justify-between items-center w-full min-w-[300px] md:h-[80px] sm:[h-70px] bg-light_mode_hard dark:bg-white/10 backdrop-blur-md ring-1 ring-white/40 rounded-xl"
     >
       <Link to={`/${user_name}`}>
         <div className="flex-1 flex items-center gap-3">

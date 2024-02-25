@@ -25,7 +25,6 @@ export const TeamOverview: FC = () => {
 
   useEffect(() => {
     if (inView) {
-      console.log("Fetching");
       fetchNextPage();
     }
   }, [inView, hasNextPage, fetchNextPage]);
@@ -44,7 +43,7 @@ export const TeamOverview: FC = () => {
       {isLoading && <Loading />}
       <div className="flex justify-between">
         <h3 className="font-semibold text-2xl mb-5">Team-Overview</h3>
-        <div className="pe-5 cursor-pointer">
+        <div className="pe-5 cursor-pointer z-[10]">
           <InvitationInbox />
         </div>
       </div>
@@ -52,7 +51,6 @@ export const TeamOverview: FC = () => {
       onChange={onChangeHandler}
         label="Search"
         radius="lg"
-        color="hash"
         classNames={{
           inputWrapper: [
             "shadow-xl",
@@ -76,7 +74,7 @@ export const TeamOverview: FC = () => {
       {data?.pages.length && (
         <div
           id="scrollableDiv"
-          className="relative px-8 no-scrollbar py-8 w-full h-[800px] bg-light_mode_secondary dark:bg-hash_one rounded-md overflow-y-scroll"
+          className="relative px-8 no-scrollbar py-8 w-full h-[800px] bg-light_mode_secondary dark:bg-white/10 backdrop-blur-md ring-1 ring-white/40 rounded-md overflow-y-scroll"
         >
           <div className="flex flex-wrap gap-3 justify-center my-8">
             {data.pages.map((pages, i) =>

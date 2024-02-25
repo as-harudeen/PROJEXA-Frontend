@@ -46,7 +46,7 @@ const TeamInvitationCard: FC<TeamInvitationCardProps> = ({
   };
 
   return (
-    <div className="py-6 px-4 bg-light_mode_hard dark:bg-hash_two rounded-lg">
+    <div className="py-6 px-4 bg-light_mode_hard dark:bg-white/10 backdrop-blur-sm ring-1 ring-white/30 rounded-lg">
       <div className="flex justify-between items-center">
         <div className="flex gap-2">
           <div>
@@ -138,7 +138,7 @@ export const InvitationInbox: FC = () => {
     <>
       <InboxIcon onClick={() => setIsOpen(true)} />
       <Modal
-        className="bg-light_mode_secondary dark:bg-hash_one text-light_mode_text dark:text-white"
+        className="bg-light_mode_secondary dark:bg-white/10 backdrop-blur-lg ring-1 ring-white/40 text-light_mode_text dark:text-white"
         isOpen={isOpen}
         onClose={onClose}
       >

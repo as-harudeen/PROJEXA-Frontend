@@ -14,13 +14,16 @@ export const TeamCard: FC<ITeamCardProps> = ({
   team_name,
   team_desc,
   team_id,
-  team_lead,innerRef
+  team_lead,
+  innerRef,
 }) => {
   const navigate = useNavigate();
 
-
   return (
-    <div ref={innerRef} className="flex flex-col justify-between h-[400px] max-w-[350px] bg-light_mode_primary shadow-md border border-light_mode_text dark:bg-hash_dark_two p-6 rounded-lg">
+    <div
+      ref={innerRef}
+      className="flex flex-col justify-between h-[400px] max-w-[350px] bg-light_mode_primary shadow-md border border-light_mode_text dark:bg-white/0 ring-1 ring-white/40 backdrop-blur-lg p-6 rounded-lg"
+    >
       <div>
         <div className="mr-4 float-left border-3 rounded-lg border-white">
           <img
@@ -51,7 +54,7 @@ export const TeamCard: FC<ITeamCardProps> = ({
         <div>
           <Button
             onClick={() => navigate(`/team/${team_id}`)}
-            className="w-full"
+            className="w-full ring-2 ring-white/40"
           >
             Team Details
           </Button>
