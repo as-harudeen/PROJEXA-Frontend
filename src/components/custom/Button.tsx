@@ -5,7 +5,8 @@ export const Button = extendVariants(NextUIButton, {
     color: {
         hash: "dark:text-white bg-light_mode_hard dark:bg-[#393939] shadow-md",
         light_hash: "text-white bg-black dark:bg-light_hash",
-        transperant: "dark:text-white bg-transperant border-2 dark:border-white border-black"
+        transperant: "dark:text-white bg-transperant border-2 dark:border-white border-black",
+        glass: "bg-white/20 hover:bg-white/10 hover:ring-1 ring-white/40"
     },
     isDisabled: {
       true: "bg-[#eaeaea] text-[#000] opacity-50 cursor-not-allowed",

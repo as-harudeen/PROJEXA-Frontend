@@ -18,9 +18,9 @@ const TeamMemberTaskPlaceholder: FC<TeamMemberTaskPlaceholderProps> = ({
 }) => {
 
   return (
-    <div className="min-w-[200px] md:w-[250px] bg-light_mode_secondary dark:bg-hash_one border-1 border-light_mode_text dark:border-white h-full max-h-[350px] overflow-y-scroll no-scrollbar px-6 py-4 rounded-lg">
+    <div className="min-w-[200px] md:w-[250px] bg-light_mode_secondary dark:bg-dark_hash ring-1 ring-white/40 dark:border-white h-full max-h-[350px] overflow-y-scroll no-scrollbar px-6 py-4 rounded-lg">
       <div>
-        <div className="flex justify-between items-center border-b-2 border-light_mode_text dark:border-white pb-4">
+        <div className="flex justify-between items-center border-b-1 border-light_mode_text dark:border-white/60 pb-4">
           <h6 className="font-semibold text-lg">{user_name}</h6>
           <img
             className="w-[40px] h-[40px] object-cover rounded-full"
@@ -50,7 +50,7 @@ const TeamMemberTaskPlaceholder: FC<TeamMemberTaskPlaceholderProps> = ({
                           {...provider.draggableProps}
                           {...provider.dragHandleProps}
                           ref={provider.innerRef}
-                          className="border-1 border-light_mode_text dark:border-white bg-light_mode_hard dark:bg-hash_two w-full ps-4 py-2 rounded-md break-all flex justify-between"
+                          className="ring-1 ring-white/40 bg-light_mode_hard dark:bg-white/10 backdrop-blur-md w-full ps-4 py-2 rounded-md break-all flex justify-between"
                         >
                           <TaskCard taskDetails={task} />
                         </div>

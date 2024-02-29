@@ -36,7 +36,7 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
   return (
     <div
       key={stage_id}
-      className="relative max-h-[350px] h-full overflow-y-scroll no-scrollbar w-[300px] px-6 py-4 shadow-lg bg-light_mode_primary dark:bg-hash_one rounded-md border-1 border-light_mode_text"
+      className="relative max-h-[350px] h-full overflow-y-scroll no-scrollbar w-[300px] px-6 py-4 shadow-lg bg-light_mode_primary dark:bg-white/10 rounded-md border-1 border-light_mode_text"
     >
       <div className="absolute right-1">
         <DeleteConfirmModal
@@ -68,7 +68,7 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
                       {...provider.draggableProps}
                       ref={provider.innerRef}
                       key={task.task_id}
-                      className={`border-1 border-light_mode_text dark:border-white dark:bg-hash_two bg-light_mode_hard shadow-lg w-full ps-4 py-2 rounded-md break-all flex justify-between`}
+                      className={` ring-1 ring-white/80 dark:bg-white/20 backdrop-blur-md bg-light_mode_hard shadow-lg w-full ps-4 py-2 rounded-md break-all flex justify-between`}
                     >
                       <TaskCard stage_id={stage_id} taskDetails={task} />
                     </div>
@@ -96,17 +96,7 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
               }}
               size="sm"
               label="new task"
-              color="border"
-              classNames={{
-                inputWrapper: [
-                  "dark:bg-opacity-30",
-                  "dark:bg-light_hash",
-                  "group-data-[focus=true]:bg-opacity-20",
-                  "group-data-[hover=true]:bg-opacity-30",
-                  "pe-14",
-                ],
-                label: ["font-[500]", "font-poppins"],
-              }}
+              color="glass"
             />
           </div>
           <div className="text-black flex gap-2">
@@ -116,7 +106,8 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
               selectedKeys={[taskState.task_priority]}
               size="sm"
               classNames={{
-                label: ["font-[500]", "font-poppins"],
+                label: ["font-[500]", "font-poppins", 'text-white'],
+                trigger: ['bg-white/20', 'text-white']
               }}
             >
               <SelectItem key="1" value="1">
@@ -128,7 +119,7 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
               <SelectItem key="3" value="3">
                 {"3"}
               </SelectItem>
-              <SelectItem key="3" value="3">
+              <SelectItem key="4" value="4">
                 {"4"}
               </SelectItem>
               <SelectItem key="5" value="5">
@@ -141,10 +132,14 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
               size="sm"
               label="Time Cap"
               value={taskState.task_time_cap}
+              color="glass"
+              classNames = {{
+                mainWrapper: ["bg-white"]
+              }}
               // onBlur={taskTimeCapOnBlurHandler}
               onChange={taskTimeCapChangeHandler}
               endContent={
-                <div className="flex items-end h-full">
+                <div className="flex items-end h-full text-white">
                   <span>h</span>
                 </div>
               }
@@ -152,7 +147,7 @@ export const TaskDistributionStage: FC<TaskDistributionStageProps> = ({
           </div>
         </div>
         <div>
-          <Button className="w-full" onClick={addTaskButtonClickHandler}>
+          <Button color="glass" className="w-full" onClick={addTaskButtonClickHandler}>
             add new task
           </Button>
         </div>

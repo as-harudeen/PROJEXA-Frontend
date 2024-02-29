@@ -26,7 +26,7 @@ export const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
   return (
     <>
       <div className="cursor-pointer" onClick={onOpen}>
-        <MdDeleteForever  className="text-red-600" size="25" />
+        <MdDeleteForever  className="text-red-600 hover:bg-white/20 hover:rounded-full hover:p-1" size="25" />
       </div>
       <Modal className="border-1 border-red-600 bg-light_mode_primary dark:bg-hash_two dark:text-white text-light_mode_text" isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent>

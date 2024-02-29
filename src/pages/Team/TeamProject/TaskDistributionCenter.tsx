@@ -147,7 +147,7 @@ export const TaskDistributionCenter: FC = () => {
           Task Distribution Center
         </h3>
       </div>
-      <div className="flex flex-col gap-6 bg-light_mode_secondary dark:bg-hash_one rounded-lg p-8">
+      <div className="flex flex-col gap-6 bg-light_mode_secondary dark:bg-white/10  ring-1 ring-white/30 rounded-lg p-8">
         <div>
           <div className="md:min-h-[400px] sm:min-h-[200px]">
             <div className="flex justify-between">
@@ -167,7 +167,7 @@ export const TaskDistributionCenter: FC = () => {
             <div>
               <h3 className="text-lg md:text-xl font-semibold">Tasks Board</h3>
             </div>
-            <div className="flex gap-3 px-8 py-12 shadow-lg bg-light_mode_hard dark:bg-hash_two rounded-md overflow-x-scroll no-scrollbar">
+            <div className="flex gap-3 px-8 py-12 shadow-lg bg-light_mode_hard dark:bg-dark_hash rounded-md overflow-x-scroll no-scrollbar">
               <div className="flex gap-5 h-full">
                 {stages?.map((stage) => (
                   <TaskDistributionStage

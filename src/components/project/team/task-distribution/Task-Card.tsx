@@ -38,7 +38,7 @@ export const TaskCard: FC<TaskCardProps> = ({ taskDetails, stage_id }) => {
           task_status && (
 
             <div>
-          <h5 className="font-semibold font-nunito mt-2 text-xs bg-white text-black px-2 py-1 rounded-sm">
+          <h5 className="font-semibold font-nunito mt-2 text-xs bg-white/20  px-2 py-1 rounded-sm">
             {task_status}
           </h5>
         </div>

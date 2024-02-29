@@ -72,7 +72,7 @@ export const TeamProjectOverview: FC = () => {
       {projects?.pages.length && (
         <div
           id="scrollableDiv"
-          className="bg-light_mode_secondary dark:bg-hash_one rounded-xl p-8 flex overflow-y-scroll max-h-[800px] no-scrollbar "
+          className="bg-light_mode_secondary dark:bg-white/10 ring-1 ring-white/40 rounded-xl p-8 flex overflow-y-scroll max-h-[800px] no-scrollbar "
         >
           <div className="flex flex-wrap gap-3 justify-center my-8">
             {projects?.pages.map((page: GETTeamProjectsResponse, i) =>

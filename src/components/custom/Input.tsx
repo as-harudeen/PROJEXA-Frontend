@@ -91,6 +91,10 @@ export const Input = extendVariants(NexUIInput, {
           "!cursor-text",
         ],
       },
+      glass: {
+        inputWrapper: ["bg-white/10", 'ring-1', 'ring-white/30'],
+        input: ["text-white/80"]
+      }
     },
     size: {
       xs: {
