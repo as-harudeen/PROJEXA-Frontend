@@ -1,6 +1,5 @@
 import { useTeamTaskDistribution } from "@hooks/project/team-project/useTeamTaskDistribution";
 import {
-  Button,
   Modal,
   ModalBody,
   ModalContent,
@@ -19,6 +18,7 @@ import moment from "moment";
 import { useFetch } from "@hooks/useFetch";
 import { DeleteConfirmModal } from "@components/project/DeleteConfirmModal";
 import { toast } from "react-toastify";
+import { Button } from "@components/custom/Button";
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
@@ -172,7 +172,7 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
 
   return (
     <Modal
-      className="dark:bg-hash_one bg-light_mode_hard text-light_mode_text dark:text-white"
+      className="dark:bg-white/10  ring-1 ring-white/50 bg-light_mode_hard text-light_mode_text dark:text-white"
       size="2xl"
       isOpen={isOpen}
       onClose={onClose}
@@ -207,7 +207,7 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
               <>
                 {!onEditMode ? (
                   <div className="flex justify-end">
-                    <Button onClick={() => setOnEditMode(true)} color="primary">
+                    <Button size="sm"  onClick={() => setOnEditMode(true)} color="glass">
                       Edit
                     </Button>
                   </div>
@@ -218,19 +218,10 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
                       label="Task Title"
                       labelPlacement="outside"
                       name="task_title"
-                      color="border"
+                      color="glass"
                       value={editedTaskState.task_title}
                       onChange={editTaskOnChangeHandler}
-                      classNames={{
-                        inputWrapper: [
-                          "bg-opacity-30",
-                          "bg-light_hash",
-                          "group-data-[focus=true]:bg-opacity-20",
-                          "group-data-[hover=true]:bg-opacity-30",
-                          "pe-14",
-                        ],
-                        label: ["font-[500]", "font-poppins"],
-                      }}
+                      
                     />
 
                     <div className="flex gap-2">
@@ -242,6 +233,7 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
                         size="sm"
                         classNames={{
                           label: ["font-[500]", "font-poppins"],
+                          trigger: ["bg-white/20", "text-white/80"]
                         }}
                       >
                         <SelectItem key="1" value="1">
@@ -253,7 +245,7 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
                         <SelectItem key="3" value="3">
                           {"3"}
                         </SelectItem>
-                        <SelectItem key="3" value="3">
+                        <SelectItem key="4" value="4">
                           {"4"}
                         </SelectItem>
                         <SelectItem key="5" value="5">
@@ -264,6 +256,7 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
                         type="number"
                         size="sm"
                         label="Time Cap ( in hour )"
+                        color="glass"
                         value={editedTaskState.task_time_cap}
                         onChange={timeCapInputChangeHandler}
                       />
@@ -277,7 +270,7 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
                       classNames={{
                         label: ["dark:text-white", "text-light_mode_text"],
                         inputWrapper: [
-                          "dark:bg-light_hash",
+                          "dark:bg-white/10",
                           "bg-light_mode_secondary",
                           "dark:data-[hover=true]:bg-hash_two",
                           "data-[hover=true]:bg-light_mode_tertiary",
@@ -292,7 +285,6 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
                     <div className="flex gap-2">
                       <Button
                         onClick={cancelEditButtonClickHandler}
-                        color="danger"
                         variant="solid"
                       >
                         Cancel
@@ -300,7 +292,7 @@ export const TaskDetailsModal: FC<TaskDetailsModalProps> = ({
                       <Button
                         onClick={onSaveHandler}
                         className="flex-1"
-                        color="primary"
+                        color="glass"
                       >
                         Save
                       </Button>
