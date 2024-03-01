@@ -61,7 +61,7 @@ export const Profile: FC = () => {
   return (
     <div className="dark:text-white text-light_mode_text px-16 py-12">
       {isLoading || (editUserMutation.isPending && <Loading />)}
-      <div className="px-14 flex items-center bg-light_mode_hard dark:bg-hash_one bg-opacity-20 w-full h-[400px]">
+      <div className="px-14 flex items-center bg-light_mode_hard dark:bg-white/10 ring-1 ring-white/50 rounded-lg w-full h-[400px]">
         <div className="flex gap-10">
           <div
             onClick={editAvatarHandler}
@@ -74,7 +74,7 @@ export const Profile: FC = () => {
               type="file"
             />
             <img
-              className="w-[200px] group-hover:opacity-50 h-[200px] object-cover rounded-2xl border-[7px] border-white dark:border-light_hash"
+              className="w-[200px] group-hover:opacity-50 h-[200px] object-cover rounded-2xl ring-2 ring-white/30"
               src={`${
                 avatarState
                   ? URL.createObjectURL(avatarState)
@@ -108,7 +108,9 @@ export const Profile: FC = () => {
             </div>
           </div>
           <div className="flex flex-col justify-center">
-            <h2 className="text-2xl font-poppins">{user?.user_full_name || ""}</h2>
+            <h2 className="text-2xl font-poppins">
+              {user?.user_full_name || ""}
+            </h2>
             <span className="text-large font-poppins text-gray-500 dark:text-gray-300">
               {user?.user_name}
             </span>
@@ -116,7 +118,7 @@ export const Profile: FC = () => {
         </div>
       </div>
       <div className="flex justify-center">
-        <div className="w-[700px] bg-light_mode_primary dark:bg-hash_two mt-[-100px] rounded-xl p-8">
+        <div className="w-[700px] bg-light_mode_primary dark:bg-white/10 backdrop-blur-sm ring-1 ring-white/50 lg:mt-[-100px] rounded-xl p-8">
           <div>
             <div>
               <h2 className="font-medium text-2xl">Basic info</h2>
@@ -139,7 +141,7 @@ export const Profile: FC = () => {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Input
-                    color="hash"
+                      color="hash"
                       defaultValue={editedDataState.user_name}
                       onChange={userNameOnChangeHandler}
                     />
@@ -171,13 +173,15 @@ export const Profile: FC = () => {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <Input
-                    color="hash"
+                      color="hash"
                       defaultValue={editedDataState.user_full_name}
                       onChange={userFullNameOnChangeHandler}
                     />
                     <div className="flex gap-2">
                       <Button onClick={updateUserFullNameHandler}>save</Button>
-                      <Button onClick={() => cancelButtonHandler("user_full_name")}>
+                      <Button
+                        onClick={() => cancelButtonHandler("user_full_name")}
+                      >
                         cancel
                       </Button>
                     </div>

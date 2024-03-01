@@ -34,7 +34,9 @@ export const usePersonalProjects = (
       }
 
       const response = await getRequest(url);
-      return (await response.json()) as ProjectInterface[];
+      const data = await response.json();
+      // if (data.message) throw new Error(data.message);
+      return data as ProjectInterface[];
     },
   });
 

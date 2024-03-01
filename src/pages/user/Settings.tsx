@@ -36,7 +36,7 @@ export const Settings: FC = () => {
         <h2 className="font-semibold text-2xl">Settings</h2>
       </div>
       <div className="flex flex-col gap-3">
-        <div className="flex justify-between bg-light_mode_primary dark:bg-hash_one bg-opacity-70 px-8 py-6 rounded-md">
+        <div className="flex justify-between bg-light_mode_primary dark:bg-white/10 ring-1 ring-white/50 bg-opacity-70 px-8 py-6 rounded-md">
           <div className="flex gap-2 items-cente">
             <h5 className="font-semibold text-large">2-Factor Auth </h5>
             <Popover
@@ -82,7 +82,7 @@ export const Settings: FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-between bg-light_mode_primary dark:bg-hash_one bg-opacity-70 px-8 py-6 rounded-md">
+        <div className="flex justify-between bg-light_mode_primary dark:bg-white/10 ring-1 ring-white/40 bg-opacity-70 px-8 py-6 rounded-md">
           <div className="flex gap-2 items-cente">
             <h5 className="font-semibold text-large">Dark Mode</h5>
           </div>

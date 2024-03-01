@@ -79,7 +79,7 @@ export const useFetch = () => {
       body: JSON.stringify(payload),
     });
     if (res.status === 401) {
-      toast.error("Unauthorized");
+      toast.error("Token Expired, please login again");
       updateUser(null);
     }
     return res;

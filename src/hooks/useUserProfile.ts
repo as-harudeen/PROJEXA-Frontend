@@ -38,7 +38,7 @@ const useUser = () => {
 
   const updateUserProfileMutation = useMutation({
     mutationFn: async (formData: FormData) => {
-      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/user`, {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}user`, {
         method: "PATCH",
         body: formData,
         credentials: "include",
@@ -46,6 +46,7 @@ const useUser = () => {
       return await res.json();
     },
     onSuccess: (data) => {
+      console.log(data);
       queryClient.setQueryData(["user", "profile"], data);
     },
   });

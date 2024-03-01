@@ -35,6 +35,7 @@ export const PersonalProjectOverview: FC = () => {
     },
   } = usePersonalProjectCounts();
 
+
   useEffect(() => {
     refetchProjectsCount();
   }, [searchValue, selectedKeys.size]);

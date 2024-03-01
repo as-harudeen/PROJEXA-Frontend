@@ -47,8 +47,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
         <div className="absolute right-1">
           <DeleteConfirmModal
             title="Are you sure?"
-            body="All tasks of this stage will also will be deleted!. 
-            are you really want delete the stage? "
+            body="Do you really want to delete this stage? "
             confirmButtonHandler={deleteStageHandler}
           />
         </div>
@@ -88,8 +87,7 @@ export const ProjectStage = forwardRef<HTMLDivElement, ProjectStageProps>(
               }}
               label="Add task"
               placeholder=""
-              color="border"
-              variant="underlined"
+              color="glass"
             />
             <div className="flex gap-2">
               <Button onClick={addTaskHandler}>Add</Button>

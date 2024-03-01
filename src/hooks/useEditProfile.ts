@@ -64,6 +64,7 @@ export const useUserProfile = () => {
       formData.append("user_profile", avatarState);
       updateUserProfileMutation.mutate(formData);
     }
+    setEditField(null);
   };
 
   const userNameOnChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
