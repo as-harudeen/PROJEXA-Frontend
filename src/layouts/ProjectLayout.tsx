@@ -26,7 +26,7 @@ export const ProjectLayout: FC = () => {
             <SideBar />
           </div>
           <main
-            className={`relative flex-1 mx-auto py-4 bg-light_mode_tertiary   dark:bg-hash_dark_two ring-1 w-full rounded-md min-h-screen h-full`}
+            className={`relative flex-1 mx-auto py-4 bg-light_mode_tertiary   dark:bg-hash_dark_two ring-1 ring-white/40 w-full rounded-md min-h-screen h-full`}
           >
             <div className="absolute bg-purple-400/30 rounded-full w-80 h-80 top-40 left-[50%] filter blur-2xl opacity-40"></div>
             <div className="absolute bg-purple-400/30 rounded-full w-64 h-64 left-10 top-[50%] filter blur-2xl opacity-40"></div>

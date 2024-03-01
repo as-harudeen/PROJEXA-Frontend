@@ -3,7 +3,7 @@
 @layer components {
   .sidebar-item {
     @apply relative w-full flex items-center justify-center h-8 sm:h-10 my-1 sm:my-2 mx-auto
-                shadow-lg bg-light_mode_primary dark:bg-hash_one text-light_mode_text dark:text-white hover:bg-light_mode_hard dark:hover:bg-light_hash 
+                shadow-lg bg-light_mode_primary dark:bg-white/10 ring-1 ring-white/40 text-light_mode_text dark:text-white hover:bg-light_mode_hard dark:hover:bg-white/20 
                 rounded-[7px] hover:rounded-xl transition-all duration-300 ease-linear
                 cursor-pointer sm:px-5 px-2;
   }

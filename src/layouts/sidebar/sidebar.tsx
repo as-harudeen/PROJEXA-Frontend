@@ -14,7 +14,7 @@ export const SideBar: FC = () => {
   const user_name = useUserStore((state) => state.user?.user_name);
   return (
     <div
-      className={`min-h-screen h-full transition-all duration-300 w-[200px] sm:w-[260px] m-0 lg:block felx flex-col text-light_mode_text dark:text-white bg-light_mode_hard dark:bg-hash_two rounded-s-md sm:rounded-lg`}
+      className={`min-h-screen h-full transition-all duration-300 w-[200px] sm:w-[260px] m-0 lg:block felx flex-col text-light_mode_text dark:text-white bg-light_mode_hard dark:bg-white/10 backdrop-blur-sm rounded-s-md sm:rounded-lg`}
     >
       <MdMenuOpen
         onClick={() => toggleSidebar(false)}
