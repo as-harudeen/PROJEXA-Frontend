@@ -52,7 +52,7 @@ export const ProjectCard: FC<ProjectCardProps> = ({
       </div>
       <div>
         <Link to={`${project_id}`}>
-          <button className="w-full border border-light_mode_text py-2 rounded-md font-nunito font-medium bg-light_mode_tertiary dark:bg-hash_dark_two/30 backdrop-blur-lg hover:dark:bg-hash_dark_two/40">
+          <button className="w-full border border-light_mode_text py-2 rounded-md font-nunito font-medium bg-light_mode_tertiary dark:bg-hash_dark_two/50 backdrop-blur-lg hover:dark:bg-hash_dark_two/40">
             Project Details
           </button>
         </Link>

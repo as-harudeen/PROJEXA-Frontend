@@ -51,11 +51,11 @@ export const UpdateProjectStatusModal: FC<UpdateProjectStatusModalProps> = ({
 
   return (
     <>
-      <span className="cursor-pointer" onClick={onOpen}>
+      <span className="cursor-pointer z-10" onClick={onOpen}>
         <MdModeEdit />
       </span>
       <Modal
-        className="dark:bg-light_hash dark:text-white"
+        className="dark:bg-white/10 ring-1 ring-white/40 backdrop-blur-sm dark:text-white"
         isOpen={isOpen}
         onOpenChange={onOpenChange}
       >
@@ -68,24 +68,24 @@ export const UpdateProjectStatusModal: FC<UpdateProjectStatusModalProps> = ({
               <ModalBody>
                 <div className=" font-poppins flex flex-col gap-2">
                   <div
-                    className={`dark:bg-hash_one px-6 py-4 rounded-lg bg-light_mode_secondary
+                    className={`dark:bg-white/10 px-6 py-4 rounded-lg bg-light_mode_secondary
                   
                 ${
                   updatedStatus === ProjectStatusEnum.pending
-                    ? "bg-opacity-70 border-1 border-light_mode_text dark:border-white"
-                    : "cursor-pointer"
+                    ? " ring-1 ring-white/60"
+                    : "cursor-pointer hover:ring-1 ring-white/40 "
                 }`}
                     onClick={() => setUpdatedStatus(ProjectStatusEnum.pending)}
                   >
                     <h3 className="font-medium">Pending</h3>
                   </div>
                   <div
-                    className={`dark:bg-hash_one px-6 py-4 rounded-lg bg-light_mode_secondary
+                    className={`dark:bg-white/10 px-6 py-4 rounded-lg bg-light_mode_secondary
                   
                 ${
                   updatedStatus === ProjectStatusEnum.onprogress
-                    ? "bg-opacity-70 border-1 border-light_mode_text dark:border-white"
-                    : "cursor-pointer"
+                    ? "ring-1 ring-white/60"
+                    : "cursor-pointer hover:ring-1 ring-white/40"
                 }`}
                     onClick={() =>
                       setUpdatedStatus(ProjectStatusEnum.onprogress)
@@ -94,12 +94,12 @@ export const UpdateProjectStatusModal: FC<UpdateProjectStatusModalProps> = ({
                     <h3 className="font-medium">OnProgress</h3>
                   </div>
                   <div
-                    className={`dark:bg-hash_one px-6 py-4 rounded-lg bg-light_mode_secondary
+                    className={`dark:bg-white/10 px-6 py-4 rounded-lg bg-light_mode_secondary
                   
                 ${
                   updatedStatus === ProjectStatusEnum.completed
-                    ? "bg-opacity-70 border-1 border-light_mode_text dark:border-white"
-                    : "cursor-pointer"
+                    ? "ring-1 ring-white/60"
+                    : "cursor-pointer hover:ring-1 ring-white/40"
                 }`}
                     onClick={() =>
                       setUpdatedStatus(ProjectStatusEnum.completed)

@@ -26,12 +26,10 @@ export const TeamProjectSpace: FC = () => {
     const { destination, source, draggableId: task_id } = result;
 
     if (!destination?.droppableId) {
-      console.log("out of boundary");
       return;
     }
 
     if (destination.droppableId === source.droppableId) {
-      console.log("No changes");
       return;
     }
 
@@ -49,7 +47,7 @@ export const TeamProjectSpace: FC = () => {
       </div>
       <div className="flex md:justify-center gap-5 px-12 py-8 bg-light_mode_primary dark:bg-hash_two overflow-x-scroll no-scrollbar shadow-xl">
         <DragDropContext onDragEnd={dragEndHandler}>
-          <div className="border-1 border-light_mode_text dark:border-white h-[400px] bg-light_mode_secondary dark:bg-hash_one overflow-y-scroll no-scrollbar min-w-[200px] w-[250px] rounded-lg">
+          <div className="ring-1 ring-white/60 h-[400px] bg-light_mode_secondary dark:bg-hash_dark_two/50 overflow-y-scroll no-scrollbar min-w-[200px] w-[250px] rounded-lg">
             <div className="flex justify-center py-2 border-b-1 border-light_mode_text">
               <span className="font-medium text-large">Todo</span>
             </div>
@@ -71,7 +69,7 @@ export const TeamProjectSpace: FC = () => {
                           {...provider.draggableProps}
                           {...provider.dragHandleProps}
                           ref={provider.innerRef}
-                          className="border-1 border-light_mode_text dark:border-white bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
+                          className="ring-1 ring-white/50 dark:border-white bg-light_mode_hard shadow-md dark:bg-white/10 p-3 rounded-lg flex justify-between break-all"
                         >
                           <TaskCard taskDetails={task} />
                         </div>
@@ -83,7 +81,7 @@ export const TeamProjectSpace: FC = () => {
               )}
             </Droppable>
           </div>
-          <div className="border-1 border-light_mode_text dark:border-white bg-light_mode_secondary dark:bg-hash_one h-[400px] min-w-[200px] w-[250px] rounded-lg">
+          <div className="ring-1 ring-white/50 bg-light_mode_secondary dark:bg-hash_dark_two/50 h-[400px] min-w-[200px] w-[250px] rounded-lg">
             <div className="flex justify-center py-2 border-b-1 border-light_mode_text">
               <span className="font-medium text-large">Doing</span>
             </div>
@@ -105,7 +103,7 @@ export const TeamProjectSpace: FC = () => {
                           {...provider.draggableProps}
                           {...provider.dragHandleProps}
                           ref={provider.innerRef}
-                          className="border-1 border-light_mode_text dark:border-white bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
+                          className="ring-1 ring-white/50 bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
                         >
                           <TaskCard taskDetails={task} />
                         </div>
@@ -117,7 +115,7 @@ export const TeamProjectSpace: FC = () => {
               )}
             </Droppable>
           </div>
-          <div className="border-1 border-light_mode_text dark:border-white h-[400px] bg-light_mode_secondary dark:bg-hash_one min-w-[200px] w-[250px] rounded-lg">
+          <div className="ring-1 ring-white/50 h-[400px] bg-light_mode_secondary dark:bg-hash_dark_two/50 min-w-[200px] w-[250px] rounded-lg">
             <div className="flex justify-center py-2 border-b-1 border-light_mode_text">
               <span className="font-medium text-large">Done</span>
             </div>
@@ -139,7 +137,7 @@ export const TeamProjectSpace: FC = () => {
                           {...provider.draggableProps}
                           {...provider.dragHandleProps}
                           ref={provider.innerRef}
-                          className="border-1 border-light_mode_text dark:border-white bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
+                          className="ring-1 ring-white/50 bg-light_mode_hard shadow-md dark:bg-hash_two p-3 rounded-lg flex justify-between break-all"
                         >
                           <TaskCard taskDetails={task} />
                         </div>

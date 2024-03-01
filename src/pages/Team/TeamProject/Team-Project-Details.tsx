@@ -17,7 +17,6 @@ export const TeamProjectDetails: FC = () => {
     updateProjectDetails,
   } = useTeamProjectDetails(team_id!, project_id!);
 
-  console.log(project);
 
   const navigate = useNavigate();
   if (isLoading) return <Loading />;
