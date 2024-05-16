@@ -28,6 +28,8 @@ export const PersonalProjectOverview: FC = () => {
       refetch: refetchProjects,
     },
   } = usePersonalProjects(currPage, searchValue, selectedKeys);
+
+  console.log(projects);
   const {
     personalProjectCountsQuery: {
       data: totalPage,

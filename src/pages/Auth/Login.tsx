@@ -13,8 +13,13 @@ import { OTPCard } from "../../components/auth/OTP-card";
 import { Button } from "../../components/custom/Button";
 import { useUserStore } from "@/store/useUserStore";
 import { useFetch } from "@hooks/useFetch";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Login: FC = () => {
+
+  const queryClient = useQueryClient();
+  queryClient.clear(); //clearing all cached queries
+
   const [isLoading, setIsLoading] = useState(false);
   const [isOTPCardOpen, setIsOTPCardOpen] = useState(false);
   const { handleSubmit, register, errors } =
@@ -53,7 +58,6 @@ export const Login: FC = () => {
 
   const OTPValidateFunction = async (otp: string) => {
     const response = await postRequest(API_POST_VALIDATE_2AF, { otp });
-    console.log(response.status);
     if (response.status === 200) {
       updateUser(
         (await response.json()) as {
@@ -67,7 +71,6 @@ export const Login: FC = () => {
     } else {
       let message = "OPPS Something went wrong";
       if (response.status == 400) {
-        console.log("bad request");
         message = (await response.text()) || message;
       } else if (response.status === 401) {
         message = "Plase enter your credential once more";

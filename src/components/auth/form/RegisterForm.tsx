@@ -8,7 +8,7 @@ import { registerSchema } from "../../../utils/zodValidator";
 import { useAuthErrorLog } from "@hooks/useAuthErrorLog";
 import { AuthInput } from "../input/AuthInput";
 import { PasswordInput } from "../input/PasswordInput";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@components/custom/Button";
 import { registerFormStyles } from "../styles";
 import { useAuthOTP } from "@hooks/useAuthOTP";
